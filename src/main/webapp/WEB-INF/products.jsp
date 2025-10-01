@@ -234,7 +234,21 @@
         <div class="logo">Webshop</div>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/products">Produkter</a>
-            <a href="${pageContext.request.contextPath}/cart">Varukorg (0)</a>
+
+            <%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
+            <%
+                Cart navCart = (Cart) session.getAttribute("cart");
+                int cartCount = (navCart != null) ? navCart.getTotalQuantity() : 0;
+            %>
+            <a href="${pageContext.request.contextPath}/cart">
+                Varukorg
+                <% if (cartCount > 0) { %>
+                (<%= cartCount %>)
+                <% } else { %>
+                (0)
+                <% } %>
+            </a>
+
             <div class="user-info">
                 <span> ${sessionScope.username}</span>
                 <a href="${pageContext.request.contextPath}/logout">Logga ut</a>
