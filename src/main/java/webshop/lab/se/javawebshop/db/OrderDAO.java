@@ -51,7 +51,7 @@ public class OrderDAO {
 
             // Steg 1: Kontrollera lagersaldo för alla produkter FÖRST
             for (OrderItem item : order.getOrderItems()) {
-                if (!productDAO.checkStock(item.getProductId(), item.getQuantity())) {
+                if (!productDAO.checkStock(conn, item.getProductId(), item.getQuantity())) {
                     throw new SQLException("Otillräckligt lagersaldo för produkt ID: " + item.getProductId());
                 }
             }
@@ -94,7 +94,7 @@ public class OrderDAO {
                 pstmtOrderItem.executeUpdate();
 
                 // Minska lagersaldo (negativt tal)
-                boolean stockUpdated = productDAO.updateStock(item.getProductId(), -item.getQuantity());
+                boolean stockUpdated = productDAO.updateStock(conn, item.getProductId(), -item.getQuantity());
                 if (!stockUpdated) {
                     throw new SQLException("Misslyckades med att uppdatera lagersaldo för produkt ID: " + item.getProductId());
                 }

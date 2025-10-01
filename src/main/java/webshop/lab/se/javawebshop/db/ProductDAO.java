@@ -345,4 +345,78 @@ public class ProductDAO {
             dbManager.closeConnection(conn);
         }
     }
+
+    /**
+     * Uppdaterar lagersaldo med given Connection (för transaktioner)
+     * Används av OrderDAO för att dela samma transaktion
+     *
+     * @param conn Connection att använda
+     * @param productId ID för produkten
+     * @param quantityChange Förändring i lagersaldo
+     * @return true om lagersaldot uppdaterades
+     */
+    public boolean updateStock(Connection conn, int productId, int quantityChange) throws SQLException {
+        String sql = "UPDATE products SET stock = stock + ? WHERE product_id = ?";
+        PreparedStatement pstmt = null;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, quantityChange);
+            pstmt.setInt(2, productId);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Lagersaldo uppdaterat för produkt ID " + productId +
+                        ": " + (quantityChange > 0 ? "+" : "") + quantityChange);
+                return true;
+            }
+
+            return false;
+
+        } finally {
+            if (pstmt != null) {
+                try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            // OBS: Stäng INTE Connection här - den ägs av anroparen
+        }
+    }
+
+    /**
+     * Kontrollerar lagersaldo med given Connection (för transaktioner)
+     *
+     * @param conn Connection att använda
+     * @param productId Produkt-ID
+     * @param quantity Önskad kvantitet
+     * @return true om tillräckligt lager finns
+     */
+    public boolean checkStock(Connection conn, int productId, int quantity) throws SQLException {
+        String sql = "SELECT stock FROM products WHERE product_id = ?";
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, productId);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int stock = rs.getInt("stock");
+                return stock >= quantity;
+            }
+
+            return false;
+
+        } finally {
+            if (rs != null) {
+                try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            if (pstmt != null) {
+                try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+            }
+            // OBS: Stäng INTE Connection här
+        }
+    }
 }
