@@ -1,6 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
+<%
+    Cart navCart = (Cart) session.getAttribute("cart");
+    int cartCount = (navCart != null) ? navCart.getTotalQuantity() : 0;
+%>
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -234,12 +239,6 @@
         <div class="logo">Webshop</div>
         <div class="nav-links">
             <a href="${pageContext.request.contextPath}/products">Produkter</a>
-
-            <%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
-            <%
-                Cart navCart = (Cart) session.getAttribute("cart");
-                int cartCount = (navCart != null) ? navCart.getTotalQuantity() : 0;
-            %>
             <a href="${pageContext.request.contextPath}/cart">
                 Varukorg
                 <% if (cartCount > 0) { %>
@@ -248,7 +247,6 @@
                 (0)
                 <% } %>
             </a>
-
             <div class="user-info">
                 <span> ${sessionScope.username}</span>
                 <a href="${pageContext.request.contextPath}/logout">Logga ut</a>
