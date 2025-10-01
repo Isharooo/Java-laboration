@@ -1,0 +1,299 @@
+package webshop.lab.se.javawebshop.db;
+
+import webshop.lab.se.javawebshop.bo.User;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Data Access Object för användare
+ * Hanterar all databaslogik för users-tabellen
+ */
+public class UserDAO {
+
+    private DBManager dbManager;
+
+    public UserDAO() {
+        this.dbManager = DBManager.getInstance();
+    }
+
+    /**
+     * Hittar användare baserat på användarnamn
+     * Används för inloggning (betyg 3)
+     *
+     * @param username Användarnamn att söka efter
+     * @return User-objekt eller null om användaren inte finns
+     */
+    public User findByUsername(String username) {
+        String sql = "SELECT user_id, username, password, role, created_at FROM users WHERE username = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dbManager.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return extractUserFromResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid hämtning av användare: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, rs);
+        }
+
+        return null;
+    }
+
+    /**
+     * Hittar användare baserat på ID
+     *
+     * @param userId ID för användaren
+     * @return User-objekt eller null
+     */
+    public User findById(int userId) {
+        String sql = "SELECT user_id, username, password, role, created_at FROM users WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dbManager.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return extractUserFromResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid hämtning av användare med ID: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, rs);
+        }
+
+        return null;
+    }
+
+    /**
+     * Hämtar alla användare
+     * Används för admin-gränssnitt (betyg 4 & 5)
+     *
+     * @return Lista med alla användare
+     */
+    public List<User> getAllUsers() {
+        String sql = "SELECT user_id, username, password, role, created_at FROM users ORDER BY username";
+        List<User> users = new ArrayList<>();
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = dbManager.getConnection();
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                users.add(extractUserFromResultSet(rs));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid hämtning av alla användare: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return users;
+    }
+
+    /**
+     * Skapar en ny användare
+     *
+     * @param user User-objekt att skapa
+     * @return true om användaren skapades, annars false
+     */
+    public boolean createUser(User user) {
+        String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dbManager.getConnection();
+            pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getRole());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Hämta genererat ID
+                ResultSet generatedKeys = pstmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    user.setUserId(generatedKeys.getInt(1));
+                }
+                System.out.println("Användare skapad: " + user.getUsername());
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid skapande av användare: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, null);
+        }
+
+        return false;
+    }
+
+    /**
+     * Uppdaterar en befintlig användare
+     * Används för användaradministration (betyg 4)
+     *
+     * @param user User-objekt med uppdaterad information
+     * @return true om användaren uppdaterades, annars false
+     */
+    public boolean updateUser(User user) {
+        String sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dbManager.getConnection();
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, user.getUsername());
+            pstmt.setString(2, user.getPassword());
+            pstmt.setString(3, user.getRole());
+            pstmt.setInt(4, user.getUserId());
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Användare uppdaterad: " + user.getUsername());
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid uppdatering av användare: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, null);
+        }
+
+        return false;
+    }
+
+    /**
+     * Tar bort en användare
+     * Används för användaradministration (betyg 5)
+     *
+     * @param userId ID för användaren att ta bort
+     * @return true om användaren togs bort, annars false
+     */
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = dbManager.getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Användare borttagen med ID: " + userId);
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Fel vid borttagning av användare: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, pstmt, null);
+        }
+
+        return false;
+    }
+
+    /**
+     * Autentiserar en användare (enkel version utan BCrypt)
+     * För betyg 3 - senare uppgraderar vi till BCrypt (betyg 4)
+     *
+     * @param username Användarnamn
+     * @param password Lösenord (klartext för tillfället)
+     * @return User-objekt om autentisering lyckas, annars null
+     */
+    public User authenticateUser(String username, String password) {
+        User user = findByUsername(username);
+
+        if (user != null) {
+            // Enkel jämförelse för betyg 3
+            // TODO: Uppgradera till BCrypt för betyg 4
+            if (user.getPassword().equals(password)) {
+                System.out.println("Användare autentiserad: " + username);
+                return user;
+            }
+        }
+
+        System.out.println("Autentisering misslyckades för: " + username);
+        return null;
+    }
+
+    /**
+     * Hjälpmetod för att extrahera User från ResultSet
+     */
+    private User extractUserFromResultSet(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setUserId(rs.getInt("user_id"));
+        user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password"));
+        user.setRole(rs.getString("role"));
+
+        Timestamp timestamp = rs.getTimestamp("created_at");
+        if (timestamp != null) {
+            user.setCreatedAt(timestamp.toLocalDateTime());
+        }
+
+        return user;
+    }
+
+    /**
+     * Hjälpmetod för att stänga resurser säkert
+     */
+    private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                System.err.println("Fel vid stängning av ResultSet: " + e.getMessage());
+            }
+        }
+
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                System.err.println("Fel vid stängning av Statement: " + e.getMessage());
+            }
+        }
+
+        if (conn != null) {
+            dbManager.closeConnection(conn);
+        }
+    }
+}
