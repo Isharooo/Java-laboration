@@ -203,7 +203,7 @@ public class UserDAO {
      * @param userId ID för användaren att ta bort
      * @return true om användaren togs bort, annars false
      */
-    public boolean deleteUser(int userId) {
+    public boolean deleteUser(int userId) throws RuntimeException {
         String sql = "DELETE FROM users WHERE user_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -223,6 +223,8 @@ public class UserDAO {
         } catch (SQLException e) {
             System.err.println("Fel vid borttagning av användare: " + e.getMessage());
             e.printStackTrace();
+            // Kasta vidare exception så servlet kan hantera den
+            throw new RuntimeException(e);
         } finally {
             closeResources(conn, pstmt, null);
         }
