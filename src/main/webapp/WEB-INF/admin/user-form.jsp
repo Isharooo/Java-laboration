@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${empty user ? 'Ny användare' : 'Redigera användare'} - Admin</title>
+    <title>${empty requestScope.user ? 'Ny användare' : 'Redigera användare'} - Admin</title>
     <style>
         * {
             margin: 0;
@@ -128,7 +128,7 @@
 </nav>
 
 <div class="container">
-    <h1>${empty user ? 'Ny användare' : 'Redigera användare'}</h1>
+    <h1>${empty requestScope.user ? 'Ny användare' : 'Redigera användare'}</h1>
 
     <div class="form-card">
         <c:if test="${not empty error}">
@@ -136,31 +136,31 @@
         </c:if>
 
         <form action="${pageContext.request.contextPath}/admin/users" method="post">
-            <input type="hidden" name="action" value="${empty user ? 'create' : 'update'}">
-            <c:if test="${not empty user}">
-                <input type="hidden" name="userId" value="${user.userId}">
+            <input type="hidden" name="action" value="${empty requestScope.user ? 'create' : 'update'}">
+            <c:if test="${not empty requestScope.user}">
+                <input type="hidden" name="userId" value="${requestScope.user.userId}">
             </c:if>
 
             <div class="form-group">
                 <label for="username">Användarnamn *</label>
                 <input type="text" id="username" name="username"
-                       value="${user.username}" required>
+                       value="${requestScope.user.username}" required>
             </div>
 
             <div class="form-group">
                 <label for="password">
-                    Lösenord ${empty user ? '*' : '(lämna tomt för att behålla)'}
+                    Lösenord ${empty requestScope.user ? '*' : '(lämna tomt för att behålla)'}
                 </label>
                 <input type="password" id="password" name="password"
-                ${empty user ? 'required' : ''}>
+                ${empty requestScope.user ? 'required' : ''}>
             </div>
 
             <div class="form-group">
                 <label for="role">Roll *</label>
                 <select id="role" name="role" required>
-                    <option value="customer" ${user.role == 'customer' ? 'selected' : ''}>Kund</option>
-                    <option value="warehouse" ${user.role == 'warehouse' ? 'selected' : ''}>Lagerpersonal</option>
-                    <option value="admin" ${user.role == 'admin' ? 'selected' : ''}>Administratör</option>
+                    <option value="customer" ${requestScope.user.role == 'customer' ? 'selected' : ''}>Kund</option>
+                    <option value="warehouse" ${requestScope.user.role == 'warehouse' ? 'selected' : ''}>Lagerpersonal</option>
+                    <option value="admin" ${requestScope.user.role == 'admin' ? 'selected' : ''}>Administratör</option>
                 </select>
             </div>
 
@@ -169,7 +169,7 @@
                     Avbryt
                 </a>
                 <button type="submit" class="btn btn-primary">
-                    ${empty user ? 'Skapa' : 'Uppdatera'}
+                    ${empty requestScope.user ? 'Skapa' : 'Uppdatera'}
                 </button>
             </div>
         </form>
