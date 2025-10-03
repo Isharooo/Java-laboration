@@ -69,7 +69,7 @@ public class LoginServlet extends HttpServlet {
 
             System.out.println("Användare inloggad: " + user.getUsername() + " (roll: " + user.getRole() + ")");
 
-            // Redirecta beroende på roll
+            // Redirect baserat på roll
             if (user.isAdmin()) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else if (user.isWarehouse()) {

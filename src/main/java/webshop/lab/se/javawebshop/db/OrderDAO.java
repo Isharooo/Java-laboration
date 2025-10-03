@@ -264,6 +264,31 @@ public class OrderDAO {
     }
 
     /**
+     *
+     * Hämtar alla ordrar med en specifik status
+     */
+    public List<Order> getOrdersByStatus(String status) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status, o.total_amount, " +"u.username " +"FROM orders o " +"JOIN users u ON o.user_id = u.user_id " +"WHERE o.status = ? " +"ORDER BY o.order_date DESC";
+        try (Connection conn = dbManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, status);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("order_id"));
+                order.setUserId(rs.getInt("user_id"));
+                order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
+                order.setStatus(rs.getString("status"));
+                order.setTotalAmount(rs.getBigDecimal("total_amount"));
+                order.setUsername(rs.getString("username"));
+                orders.add(order);}
+        } catch (SQLException e) {
+            System.err.println("Fel vid hämtning av ordrar efter status: " + e.getMessage());
+            e.printStackTrace();}
+        return orders;}
+
+    /**
      * Uppdaterar status för en order
      * Används för warehouse-personal att "packa" ordrar (betyg 5)
      *
