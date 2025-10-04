@@ -5,252 +5,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Användarhantering - Admin</title>
+    <title>Användarhantering</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
 
-        nav {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        h1 {
-            margin-bottom: 30px;
-            color: #333;
-        }
-
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .actions {
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 14px;
+        nav a {
+            margin-right: 15px;
         }
 
         table {
+            border-collapse: collapse;
             width: 100%;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        thead {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            margin-top: 20px;
         }
 
         th, td {
-            padding: 15px;
+            border: 1px solid black;
+            padding: 10px;
             text-align: left;
         }
 
-        tbody tr {
-            border-bottom: 1px solid #eee;
-        }
-
-        tbody tr:hover {
-            background: #f8f9fa;
-        }
-
-        .badge {
+        button, a.button {
             padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .badge-admin {
-            background: #667eea;
-            color: white;
-        }
-
-        .badge-customer {
-            background: #28a745;
-            color: white;
-        }
-
-        .badge-warehouse {
-            background: #ffc107;
-            color: #333;
+            margin-right: 5px;
         }
     </style>
 </head>
 <body>
 <nav>
-    <div class="nav-container">
-        <div class="logo">Admin Panel</div>
-        <div class="nav-links">
-            <a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
-            <a href="${pageContext.request.contextPath}/admin/users">Användare</a>
-            <a href="${pageContext.request.contextPath}/admin/products">Produkter</a>
-            <a href="${pageContext.request.contextPath}/admin/categories">Kategorier</a>
-            <a href="${pageContext.request.contextPath}/products">Kundvy</a>
-            <span>${sessionScope.username}</span>
-            <a href="${pageContext.request.contextPath}/logout">Logga ut</a>
-        </div>
-    </div>
+    <a href="${pageContext.request.contextPath}/admin/dashboard">Dashboard</a>
+    <a href="${pageContext.request.contextPath}/admin/products">Produkter</a>
+    <a href="${pageContext.request.contextPath}/admin/categories">Kategorier</a>
+    <a href="${pageContext.request.contextPath}/logout">Logga ut</a>
 </nav>
 
-<div class="container">
-    <h1>Användarhantering</h1>
+<h1>Användarhantering</h1>
 
-    <c:if test="${not empty success}">
-        <div class="alert alert-success">${success}</div>
-    </c:if>
+<a href="${pageContext.request.contextPath}/admin/users?action=new">
+    <button>Ny användare</button>
+</a>
 
-    <c:if test="${not empty error}">
-        <div class="alert alert-error">${error}</div>
-    </c:if>
-
-    <div class="actions">
-        <a href="${pageContext.request.contextPath}/admin/users?action=new" class="btn btn-primary">
-            + Ny användare
-        </a>
-    </div>
-
-    <table>
-        <thead>
+<table>
+    <thead>
+    <tr>
+        <th>Användarnamn</th>
+        <th>Roll</th>
+        <th>Åtgärder</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach var="user" items="${users}">
         <tr>
-            <th>ID</th>
-            <th>Användarnamn</th>
-            <th>Roll</th>
-            <th>Åtgärder</th>
-        </tr>
-        </thead>
-        <tbody>
-        <c:forEach var="user" items="${users}">
-            <tr>
-                <td>${user.userId}</td>
-                <td>${user.username}</td>
-                <td>
-                    <c:choose>
-                        <c:when test="${user.role == 'admin'}">
-                            <span class="badge badge-admin">Admin</span>
-                        </c:when>
-                        <c:when test="${user.role == 'warehouse'}">
-                            <span class="badge badge-warehouse">Lager</span>
-                        </c:when>
-                        <c:otherwise>
-                            <span class="badge badge-customer">Kund</span>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-                <td>
-                    <a href="${pageContext.request.contextPath}/admin/users?action=edit&id=${user.userId}"
-                       class="btn btn-secondary btn-sm">Redigera</a>
+            <td>${user.username}</td>
+            <td>${user.role}</td>
+            <td>
+                <a href="${pageContext.request.contextPath}/admin/users?action=edit&id=${user.userId}">
+                    <button>Redigera</button>
+                </a>
 
-                    <c:if test="${user.userId != sessionScope.user.userId}">
-                        <a href="${pageContext.request.contextPath}/admin/users?action=delete&id=${user.userId}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Är du säker på att du vill ta bort ${user.username}?\n\nOBS: Användare med ordrar kan inte tas bort.')">
-                            Ta bort
-                        </a>
-                    </c:if>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</div>
+                <c:if test="${user.userId != sessionScope.user.userId}">
+                    <a href="${pageContext.request.contextPath}/admin/users?action=delete&id=${user.userId}">
+                        <button>Ta bort</button>
+                    </a>
+                </c:if>
+            </td>
+        </tr>
+    </c:forEach>
+    </tbody>
+</table>
 </body>
 </html>
-
