@@ -4,10 +4,6 @@ import webshop.lab.se.javawebshop.db.UserDAO;
 
 import java.util.List;
 
-/**
- * Facade för användarhantering (BO-lager)
- * Hanterar inloggning och användaradministration
- */
 public class UserFacade {
 
     private UserDAO userDAO;
@@ -16,11 +12,7 @@ public class UserFacade {
         this.userDAO = new UserDAO();
     }
 
-    /**
-     * Loggar in en användare
-     */
     public User login(String username, String password) {
-        // Validering
         if (username == null || username.trim().isEmpty()) {
             System.err.println("Användarnamn saknas");
             return null;
@@ -31,7 +23,6 @@ public class UserFacade {
             return null;
         }
 
-        // Autentisera via DAO
         User user = userDAO.authenticateUser(username.trim(), password);
 
         if (user != null) {
@@ -43,16 +34,10 @@ public class UserFacade {
         return user;
     }
 
-    /**
-     * Hämtar alla användare (Admin)
-     */
     public List<User> getAllUsers() {
         return userDAO.getAllUsers();
     }
 
-    /**
-     * Hämtar en specifik användare
-     */
     public User getUserById(int userId) {
         if (userId <= 0) {
             System.err.println("Ogiltigt användar-ID");
@@ -62,9 +47,6 @@ public class UserFacade {
         return userDAO.findById(userId);
     }
 
-    /**
-     * Hittar användare baserat på användarnamn
-     */
     public User getUserByUsername(String username) {
         if (username == null || username.trim().isEmpty()) {
             System.err.println("Användarnamn saknas");
@@ -74,11 +56,7 @@ public class UserFacade {
         return userDAO.findByUsername(username.trim());
     }
 
-    /**
-     * Skapar en ny användare (Admin)
-     */
     public boolean createUser(User user) {
-        // Validering
         if (user == null) {
             System.err.println("User-objekt saknas");
             return false;
@@ -94,7 +72,6 @@ public class UserFacade {
             return false;
         }
 
-        // Kontrollera om användarnamnet redan finns
         User existing = userDAO.findByUsername(user.getUsername());
         if (existing != null) {
             System.err.println("Användarnamnet finns redan");
@@ -104,9 +81,6 @@ public class UserFacade {
         return userDAO.createUser(user);
     }
 
-    /**
-     * Uppdaterar en användare (Admin)
-     */
     public boolean updateUser(User user) {
         if (user == null || user.getUserId() <= 0) {
             System.err.println("Ogiltig användare - ID saknas");
@@ -116,9 +90,6 @@ public class UserFacade {
         return userDAO.updateUser(user);
     }
 
-    /**
-     * Tar bort en användare (Admin)
-     */
     public boolean deleteUser(int userId) {
         if (userId <= 0) {
             System.err.println("Ogiltigt användar-ID");

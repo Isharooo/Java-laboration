@@ -29,7 +29,6 @@ public class AdminDashboardServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Hämta statistik VIA FACADES
         int totalUsers = userFacade.getAllUsers().size();
         int totalProducts = itemFacade.getAllProducts().size();
         int totalCategories = itemFacade.getAllCategories().size();

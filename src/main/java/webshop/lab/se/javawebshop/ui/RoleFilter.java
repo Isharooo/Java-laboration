@@ -9,10 +9,6 @@ import webshop.lab.se.javawebshop.bo.User;
 
 import java.io.IOException;
 
-/**
- * Filter för att kontrollera användarroller
- * Skyddar admin och warehouse paths
- */
 @WebFilter(filterName = "RoleFilter", urlPatterns = {"/admin/*", "/warehouse/*"})
 public class RoleFilter implements Filter {
 
@@ -35,7 +31,6 @@ public class RoleFilter implements Filter {
 
         User user = (User) session.getAttribute("user");
 
-        // Kontrollera behörighet för admin-paths
         if (path.startsWith(contextPath + "/admin/")) {
             if (!user.isAdmin()) {
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -44,7 +39,6 @@ public class RoleFilter implements Filter {
             }
         }
 
-        // Kontrollera behörighet för warehouse-paths
         if (path.startsWith(contextPath + "/warehouse/")) {
             if (!user.isWarehouse() && !user.isAdmin()) {
                 httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
@@ -53,7 +47,6 @@ public class RoleFilter implements Filter {
             }
         }
 
-        // Användaren har rätt behörighet - fortsätt
         chain.doFilter(request, response);
     }
 }

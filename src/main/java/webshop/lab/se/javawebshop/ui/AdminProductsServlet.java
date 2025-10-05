@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Admin servlet för produkthantering (betyg 5)
- */
 @WebServlet(name = "AdminProductsServlet", urlPatterns = {"/admin/products"})
 public class AdminProductsServlet extends HttpServlet {
 
@@ -67,9 +64,6 @@ public class AdminProductsServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Lista alla produkter
-     */
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -78,9 +72,6 @@ public class AdminProductsServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/admin/products.jsp").forward(request, response);
     }
 
-    /**
-     * Visa formulär för ny produkt
-     */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -90,9 +81,6 @@ public class AdminProductsServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/admin/product-form.jsp").forward(request, response);
     }
 
-    /**
-     * Visa formulär för att redigera produkt
-     */
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -114,9 +102,6 @@ public class AdminProductsServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Skapa ny produkt
-     */
     private void createProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -126,7 +111,6 @@ public class AdminProductsServlet extends HttpServlet {
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
 
-            // Validera
             if (name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException("Produktnamn måste anges");
             }
@@ -157,9 +141,6 @@ public class AdminProductsServlet extends HttpServlet {
         listProducts(request, response);
     }
 
-    /**
-     * Uppdatera befintlig produkt
-     */
     private void updateProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -170,7 +151,6 @@ public class AdminProductsServlet extends HttpServlet {
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
 
-            // Validera
             if (name == null || name.trim().isEmpty()) {
                 throw new IllegalArgumentException("Produktnamn måste anges");
             }
@@ -201,9 +181,6 @@ public class AdminProductsServlet extends HttpServlet {
         listProducts(request, response);
     }
 
-    /**
-     * Ta bort produkt
-     */
     private void deleteProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

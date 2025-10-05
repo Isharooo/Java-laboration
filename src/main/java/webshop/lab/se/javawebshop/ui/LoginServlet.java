@@ -11,10 +11,6 @@ import webshop.lab.se.javawebshop.bo.UserFacade;
 
 import java.io.IOException;
 
-/**
- * Servlet för inloggning (betyg 3)
- * Använder HttpSession för att hålla inloggad användare
- */
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
@@ -25,29 +21,20 @@ public class LoginServlet extends HttpServlet {
         userFacade = new UserFacade();
     }
 
-    /**
-     * GET - Visa inloggningsformuläret
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Forwarda till login.jsp
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
-    /**
-     * POST - Hantera inloggningsförsök
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Hämta formulärdata
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Validera input
         if (username == null || username.trim().isEmpty() ||
                 password == null || password.trim().isEmpty()) {
 
@@ -56,12 +43,9 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Autentisera användaren VIA FACADE
         User user = userFacade.login(username.trim(), password);
 
         if (user != null) {
-            // Inloggning lyckades
-            // Skapa session och spara användaren
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
             session.setAttribute("username", user.getUsername());
@@ -69,7 +53,6 @@ public class LoginServlet extends HttpServlet {
 
             System.out.println("Användare inloggad: " + user.getUsername() + " (roll: " + user.getRole() + ")");
 
-            // Redirect baserat på roll
             if (user.isAdmin()) {
                 response.sendRedirect(request.getContextPath() + "/admin/dashboard");
             } else if (user.isWarehouse()) {
@@ -79,7 +62,6 @@ public class LoginServlet extends HttpServlet {
             }
 
         } else {
-            // Inloggning misslyckades
             request.setAttribute("error", "Felaktigt användarnamn eller lösenord");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }

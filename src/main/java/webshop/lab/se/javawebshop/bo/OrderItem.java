@@ -2,10 +2,6 @@ package webshop.lab.se.javawebshop.bo;
 
 import java.math.BigDecimal;
 
-/**
- * Business Object för orderrader
- * Representerar en produkt i en order
- */
 public class OrderItem {
     private int orderItemId;
     private int orderId;
@@ -13,10 +9,8 @@ public class OrderItem {
     private int quantity;
     private BigDecimal price;
 
-    // Extra fält för att hålla produktnamn (från JOIN)
     private String productName;
 
-    // Konstruktorer
     public OrderItem() {
     }
 
@@ -36,7 +30,6 @@ public class OrderItem {
         this.price = price;
     }
 
-    // Getters och Setters
     public int getOrderItemId() {
         return orderItemId;
     }
@@ -85,7 +78,6 @@ public class OrderItem {
         this.productName = productName;
     }
 
-    // Hjälpmetod för att beräkna totalpris
     public BigDecimal getSubtotal() {
         return price.multiply(BigDecimal.valueOf(quantity));
     }

@@ -6,10 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object för användare
- * Hanterar all databaslogik för users-tabellen
- */
 public class UserDAO {
 
     private DBManager dbManager;
@@ -18,13 +14,6 @@ public class UserDAO {
         this.dbManager = DBManager.getInstance();
     }
 
-    /**
-     * Hittar användare baserat på användarnamn
-     * Används för inloggning (betyg 3)
-     *
-     * @param username Användarnamn att söka efter
-     * @return User-objekt eller null om användaren inte finns
-     */
     public User findByUsername(String username) {
         String sql = "SELECT user_id, username, password, role FROM users WHERE username = ?";
         Connection conn = null;
@@ -52,12 +41,6 @@ public class UserDAO {
         return null;
     }
 
-    /**
-     * Hittar användare baserat på ID
-     *
-     * @param userId ID för användaren
-     * @return User-objekt eller null
-     */
     public User findById(int userId) {
         String sql = "SELECT user_id, username, password, role FROM users WHERE user_id = ?";
         Connection conn = null;
@@ -85,12 +68,6 @@ public class UserDAO {
         return null;
     }
 
-    /**
-     * Hämtar alla användare
-     * Används för admin-gränssnitt (betyg 4 & 5)
-     *
-     * @return Lista med alla användare
-     */
     public List<User> getAllUsers() {
         String sql = "SELECT user_id, username, password, role FROM users ORDER BY username";
         List<User> users = new ArrayList<>();
@@ -117,12 +94,6 @@ public class UserDAO {
         return users;
     }
 
-    /**
-     * Skapar en ny användare
-     *
-     * @param user User-objekt att skapa
-     * @return true om användaren skapades, annars false
-     */
     public boolean createUser(User user) {
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
         Connection conn = null;
@@ -139,7 +110,6 @@ public class UserDAO {
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                // Hämta genererat ID
                 ResultSet generatedKeys = pstmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     user.setUserId(generatedKeys.getInt(1));
@@ -158,13 +128,6 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Uppdaterar en befintlig användare
-     * Används för användaradministration (betyg 4)
-     *
-     * @param user User-objekt med uppdaterad information
-     * @return true om användaren uppdaterades, annars false
-     */
     public boolean updateUser(User user) {
         String sql = "UPDATE users SET username = ?, password = ?, role = ? WHERE user_id = ?";
         Connection conn = null;
@@ -196,13 +159,6 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Tar bort en användare
-     * Används för användaradministration (betyg 5)
-     *
-     * @param userId ID för användaren att ta bort
-     * @return true om användaren togs bort, annars false
-     */
     public boolean deleteUser(int userId) throws RuntimeException {
         String sql = "DELETE FROM users WHERE user_id = ?";
         Connection conn = null;
@@ -223,7 +179,6 @@ public class UserDAO {
         } catch (SQLException e) {
             System.err.println("Fel vid borttagning av användare: " + e.getMessage());
             e.printStackTrace();
-            // Kasta vidare exception så servlet kan hantera den
             throw new RuntimeException(e);
         } finally {
             closeResources(conn, pstmt, null);
@@ -232,20 +187,10 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Autentiserar en användare (enkel version utan BCrypt)
-     * För betyg 3 - senare uppgraderar vi till BCrypt (betyg 4)
-     *
-     * @param username Användarnamn
-     * @param password Lösenord (klartext för tillfället)
-     * @return User-objekt om autentisering lyckas, annars null
-     */
     public User authenticateUser(String username, String password) {
         User user = findByUsername(username);
 
         if (user != null) {
-            // Enkel jämförelse för betyg 3
-            // TODO: Uppgradera till BCrypt för betyg 4
             if (user.getPassword().equals(password)) {
                 System.out.println("Användare autentiserad: " + username);
                 return user;
@@ -256,9 +201,6 @@ public class UserDAO {
         return null;
     }
 
-    /**
-     * Hjälpmetod för att extrahera User från ResultSet
-     */
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getInt("user_id"));
@@ -269,9 +211,6 @@ public class UserDAO {
         return user;
     }
 
-    /**
-     * Hjälpmetod för att stänga resurser säkert
-     */
     private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
         if (rs != null) {
             try {

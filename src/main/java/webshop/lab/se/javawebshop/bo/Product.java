@@ -2,10 +2,6 @@ package webshop.lab.se.javawebshop.bo;
 
 import java.math.BigDecimal;
 
-/**
- * Business Object för produkter
- * Innehåller lagersaldo (stock) för betyg 4
- */
 public class Product {
     private int productId;
     private int categoryId;
@@ -13,10 +9,8 @@ public class Product {
     private BigDecimal price;
     private int stock;
 
-    // Extra fält för att hålla kategorinamn (från JOIN)
     private String categoryName;
 
-    // Konstruktorer
     public Product() {
     }
 
@@ -35,7 +29,6 @@ public class Product {
         this.stock = stock;
     }
 
-    // Getters och Setters
     public int getProductId() {
         return productId;
     }
@@ -84,7 +77,6 @@ public class Product {
         this.categoryName = categoryName;
     }
 
-    // Hjälpmetod för att kontrollera om produkt finns i lager (betyg 4)
     public boolean isInStock() {
         return stock > 0;
     }

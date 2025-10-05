@@ -1,20 +1,14 @@
 package webshop.lab.se.javawebshop.bo;
 
-/**
- * Business Object för användare
- * Representerar en rad i users-tabellen
- */
 public class User {
     private int userId;
     private String username;
     private String password;
-    private String role; // "customer", "admin", "warehouse"
+    private String role;
 
-    // Konstruktor - tom
     public User() {
     }
 
-    // Konstruktor - med parametrar
     public User(int userId, String username, String password, String role) {
         this.userId = userId;
         this.username = username;
@@ -22,14 +16,12 @@ public class User {
         this.role = role;
     }
 
-    // Konstruktor - utan userId (för nya användare)
     public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-    // Getters och Setters
     public int getUserId() {
         return userId;
     }
@@ -62,7 +54,6 @@ public class User {
         this.role = role;
     }
 
-    // Hjälpmetoder för rollkontroll
     public boolean isAdmin() {
         return "admin".equals(role);
     }

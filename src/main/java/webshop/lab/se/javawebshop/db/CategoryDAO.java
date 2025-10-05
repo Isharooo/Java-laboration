@@ -6,9 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object för kategorier
- */
 public class CategoryDAO {
 
     private DBManager dbManager;
@@ -17,11 +14,6 @@ public class CategoryDAO {
         this.dbManager = DBManager.getInstance();
     }
 
-    /**
-     * Hämtar alla kategorier
-     *
-     * @return Lista med alla kategorier
-     */
     public List<Category> getAllCategories() {
         String sql = "SELECT category_id, name FROM categories ORDER BY name";
         List<Category> categories = new ArrayList<>();
@@ -48,12 +40,6 @@ public class CategoryDAO {
         return categories;
     }
 
-    /**
-     * Hämtar en kategori baserat på ID
-     *
-     * @param categoryId Kategori-ID
-     * @return Category-objekt eller null
-     */
     public Category getCategoryById(int categoryId) {
         String sql = "SELECT category_id, name FROM categories WHERE category_id = ?";
         Connection conn = null;
@@ -81,13 +67,6 @@ public class CategoryDAO {
         return null;
     }
 
-    /**
-     * Skapar en ny kategori
-     * Används för admin-funktionalitet (betyg 5)
-     *
-     * @param category Category-objekt att skapa
-     * @return true om kategorin skapades
-     */
     public boolean createCategory(Category category) {
         String sql = "INSERT INTO categories (name) VALUES (?)";
         Connection conn = null;
@@ -120,13 +99,6 @@ public class CategoryDAO {
         return false;
     }
 
-    /**
-     * Uppdaterar en befintlig kategori
-     * Används för admin-funktionalitet (betyg 5)
-     *
-     * @param category Category-objekt med uppdaterad information
-     * @return true om kategorin uppdaterades
-     */
     public boolean updateCategory(Category category) {
         String sql = "UPDATE categories SET name = ? WHERE category_id = ?";
         Connection conn = null;
@@ -156,14 +128,6 @@ public class CategoryDAO {
         return false;
     }
 
-    /**
-     * Tar bort en kategori
-     * Används för admin-funktionalitet (betyg 5)
-     * OBS: Misslyckas om det finns produkter i kategorin (foreign key constraint)
-     *
-     * @param categoryId ID för kategorin att ta bort
-     * @return true om kategorin togs bort
-     */
     public boolean deleteCategory(int categoryId) {
         String sql = "DELETE FROM categories WHERE category_id = ?";
         Connection conn = null;
@@ -191,9 +155,6 @@ public class CategoryDAO {
         return false;
     }
 
-    /**
-     * Hjälpmetod för att extrahera Category från ResultSet
-     */
     private Category extractCategoryFromResultSet(ResultSet rs) throws SQLException {
         Category category = new Category();
         category.setCategoryId(rs.getInt("category_id"));
@@ -201,9 +162,6 @@ public class CategoryDAO {
         return category;
     }
 
-    /**
-     * Hjälpmetod för att stänga resurser
-     */
     private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
         if (rs != null) {
             try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }

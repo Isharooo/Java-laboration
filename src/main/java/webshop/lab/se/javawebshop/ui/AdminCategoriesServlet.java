@@ -11,9 +11,6 @@ import webshop.lab.se.javawebshop.bo.ItemFacade;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Admin servlet för kategorihantering (betyg 5)
- */
 @WebServlet(name = "AdminCategoriesServlet", urlPatterns = {"/admin/categories"})
 public class AdminCategoriesServlet extends HttpServlet {
 
@@ -65,9 +62,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Lista alla kategorier
-     */
     private void listCategories(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -76,9 +70,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/admin/categories.jsp").forward(request, response);
     }
 
-    /**
-     * Visa formulär för ny kategori
-     */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -86,9 +77,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/admin/category-form.jsp").forward(request, response);
     }
 
-    /**
-     * Visa formulär för att redigera kategori
-     */
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -108,15 +96,11 @@ public class AdminCategoriesServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Skapa ny kategori
-     */
     private void createCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String name = request.getParameter("name");
 
-        // Validera
         if (name == null || name.trim().isEmpty()) {
             request.setAttribute("error", "Kategorinamn måste anges");
             request.getRequestDispatcher("/WEB-INF/admin/category-form.jsp").forward(request, response);
@@ -135,9 +119,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         listCategories(request, response);
     }
 
-    /**
-     * Uppdatera befintlig kategori
-     */
     private void updateCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -145,7 +126,6 @@ public class AdminCategoriesServlet extends HttpServlet {
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
             String name = request.getParameter("name");
 
-            // Validera
             if (name == null || name.trim().isEmpty()) {
                 request.setAttribute("error", "Kategorinamn måste anges");
                 Category category = itemFacade.getCategoryById(categoryId);
@@ -170,9 +150,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         listCategories(request, response);
     }
 
-    /**
-     * Ta bort kategori
-     */
     private void deleteCategory(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

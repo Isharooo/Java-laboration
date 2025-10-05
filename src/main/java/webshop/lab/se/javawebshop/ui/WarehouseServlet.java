@@ -11,10 +11,6 @@ import webshop.lab.se.javawebshop.bo.OrderFacade;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Warehouse servlet för orderhantering (betyg 5)
- * Lagerpersonal kan se ordrar och uppdatera status
- */
 @WebServlet(name = "WarehouseServlet", urlPatterns = {"/warehouse/orders"})
 public class WarehouseServlet extends HttpServlet {
 
@@ -51,9 +47,6 @@ public class WarehouseServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Lista alla ordrar (med optional filter på status)
-     */
     private void listOrders(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -63,9 +56,6 @@ public class WarehouseServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/warehouse/orders.jsp").forward(request, response);
     }
 
-    /**
-     * Visa detaljer för en specifik order
-     */
     private void viewOrder(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -85,9 +75,6 @@ public class WarehouseServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Uppdatera orderstatus (t.ex. "packa" en order)
-     */
     private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 

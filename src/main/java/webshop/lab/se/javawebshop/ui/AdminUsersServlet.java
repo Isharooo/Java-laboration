@@ -11,9 +11,6 @@ import webshop.lab.se.javawebshop.bo.UserFacade;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Admin servlet för användarhantering (CRUD - betyg 4 & 5)
- */
 @WebServlet(name = "AdminUsersServlet", urlPatterns = {"/admin/users"})
 public class AdminUsersServlet extends HttpServlet {
 
@@ -65,9 +62,6 @@ public class AdminUsersServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Lista alla användare
-     */
     private void listUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -76,20 +70,12 @@ public class AdminUsersServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/admin/users.jsp").forward(request, response);
     }
 
-    /**
-     * Visa formulär för ny användare
-     * */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Sätt INGEN user-attribut så JSP vet att det är en ny användare
         request.removeAttribute("user");
         request.getRequestDispatcher("/WEB-INF/admin/user-form.jsp").forward(request, response);
     }
 
-
-    /**
-     * Visa formulär för att redigera användare
-     */
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -109,9 +95,6 @@ public class AdminUsersServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Skapa ny användare
-     */
     private void createUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -119,7 +102,6 @@ public class AdminUsersServlet extends HttpServlet {
         String password = request.getParameter("password");
         String role = request.getParameter("role");
 
-        // Validera input
         if (username == null || username.trim().isEmpty() ||
                 password == null || password.trim().isEmpty() ||
                 role == null || role.trim().isEmpty()) {
@@ -129,7 +111,6 @@ public class AdminUsersServlet extends HttpServlet {
             return;
         }
 
-        // Skapa användare VIA FACADE
         User user = new User(username.trim(), password, role);
         boolean success = userFacade.createUser(user);
 
@@ -142,9 +123,6 @@ public class AdminUsersServlet extends HttpServlet {
         listUsers(request, response);
     }
 
-    /**
-     * Uppdatera befintlig användare
-     */
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -154,7 +132,6 @@ public class AdminUsersServlet extends HttpServlet {
             String password = request.getParameter("password");
             String role = request.getParameter("role");
 
-            // Validera
             if (username == null || username.trim().isEmpty() ||
                     role == null || role.trim().isEmpty()) {
 
@@ -181,16 +158,12 @@ public class AdminUsersServlet extends HttpServlet {
         listUsers(request, response);
     }
 
-    /**
-     * Ta bort användare
-     */
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
             int userId = Integer.parseInt(request.getParameter("id"));
 
-            // Förhindra att admin tar bort sig själv
             User currentUser = (User) request.getSession().getAttribute("user");
             if (currentUser.getUserId() == userId) {
                 request.setAttribute("error", "Du kan inte ta bort ditt eget konto!");
@@ -207,7 +180,6 @@ public class AdminUsersServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             request.setAttribute("error", "Ogiltigt användar-ID");
         } catch (Exception e) {
-            // Hantera foreign key constraint
             if (e.getMessage() != null && e.getMessage().contains("foreign key constraint")) {
                 request.setAttribute("error", "Användaren kan inte tas bort eftersom det finns ordrar kopplade till kontot.");
             } else {

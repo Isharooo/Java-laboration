@@ -8,10 +8,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-/**
- * Filter för att kontrollera att användare är inloggad
- * Skyddar alla sidor utom login
- */
 @WebFilter(filterName = "AuthFilter", urlPatterns = {"/*"})
 public class AuthFilter implements Filter {
 
@@ -25,24 +21,20 @@ public class AuthFilter implements Filter {
         String path = httpRequest.getRequestURI();
         String contextPath = httpRequest.getContextPath();
 
-        // Paths som INTE kräver inloggning
         boolean isLoginPage = path.equals(contextPath + "/login");
         boolean isLoginServlet = path.equals(contextPath + "/login");
         boolean isPublicResource = path.startsWith(contextPath + "/css/") ||
                 path.startsWith(contextPath + "/js/") ||
                 path.startsWith(contextPath + "/images/");
 
-        // Kontrollera om användaren är inloggad
         HttpSession session = httpRequest.getSession(false);
         boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
 
-        // Om sidan kräver inloggning och användaren inte är inloggad
         if (!isLoginPage && !isPublicResource && !isLoggedIn) {
             httpResponse.sendRedirect(contextPath + "/login");
             return;
         }
 
-        // Fortsätt med request
         chain.doFilter(request, response);
     }
 }

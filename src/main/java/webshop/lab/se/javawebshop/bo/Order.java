@@ -4,23 +4,16 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Business Object för ordrar
- * Status: pending, packed, shipped (betyg 4 & 5)
- */
 public class Order {
     private int orderId;
     private int userId;
-    private String status; // "pending", "packed", "shipped"
+    private String status;
     private BigDecimal totalAmount;
 
-    // Extra fält för att hålla användarnamn (från JOIN)
     private String username;
 
-    // Lista med orderrader (fylls vid behov)
     private List<OrderItem> orderItems;
 
-    // Konstruktorer
     public Order() {
         this.orderItems = new ArrayList<>();
     }
@@ -40,7 +33,6 @@ public class Order {
         this.orderItems = new ArrayList<>();
     }
 
-    // Getters och Setters
     public int getOrderId() {
         return orderId;
     }
@@ -93,7 +85,6 @@ public class Order {
         this.orderItems.add(item);
     }
 
-    // Hjälpmetoder för status
     public boolean isPending() {
         return "pending".equals(status);
     }
@@ -102,9 +93,6 @@ public class Order {
         return "packed".equals(status);
     }
 
-    public boolean isShipped() {
-        return "shipped".equals(status);
-    }
 
     @Override
     public String toString() {

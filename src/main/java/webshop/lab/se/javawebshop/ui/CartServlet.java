@@ -12,10 +12,6 @@ import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
 
-/**
- * Servlet för varukorg (betyg 3)
- * Hanterar: lägg till, ta bort, uppdatera kvantitet
- */
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
 
@@ -26,53 +22,41 @@ public class CartServlet extends HttpServlet {
         itemFacade = new ItemFacade();
     }
 
-    /**
-     * GET - Visa varukorgen
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Kontrollera inloggning
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Hämta eller skapa varukorg
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
 
-        // Forwarda till cart.jsp
         request.getRequestDispatcher("/WEB-INF/cart.jsp").forward(request, response);
     }
 
-    /**
-     * POST - Hantera åtgärder i varukorgen
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Kontrollera inloggning
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
-        // Hämta eller skapa varukorg
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {
             cart = new Cart();
             session.setAttribute("cart", cart);
         }
 
-        // Hämta action-parameter
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -102,20 +86,15 @@ public class CartServlet extends HttpServlet {
                 break;
         }
 
-        // Redirecta tillbaka till varukorgen
         response.sendRedirect(request.getContextPath() + "/cart");
     }
 
-    /**
-     * Lägger till en produkt i varukorgen
-     */
     private void handleAddToCart(HttpServletRequest request, Cart cart) {
         try {
             int productId = Integer.parseInt(request.getParameter("productId"));
             String quantityParam = request.getParameter("quantity");
             int quantity = (quantityParam != null) ? Integer.parseInt(quantityParam) : 1;
 
-            // Hämta produkten från databasen VIA FACADE
             Product product = itemFacade.getProductById(productId);
 
             if (product != null && product.getStock() >= quantity) {
@@ -130,9 +109,6 @@ public class CartServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Tar bort en produkt från varukorgen
-     */
     private void handleRemoveFromCart(HttpServletRequest request, Cart cart) {
         try {
             int productId = Integer.parseInt(request.getParameter("productId"));
@@ -144,15 +120,11 @@ public class CartServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Uppdaterar kvantitet för en produkt i varukorgen
-     */
     private void handleUpdateQuantity(HttpServletRequest request, Cart cart) {
         try {
             int productId = Integer.parseInt(request.getParameter("productId"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-            // Kontrollera lagersaldo VIA FACADE
             Product product = itemFacade.getProductById(productId);
 
             if (product != null && product.getStock() >= quantity) {

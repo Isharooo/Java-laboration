@@ -9,10 +9,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-/**
- * Servlet för utloggning
- * Tar bort sessionen och redirectar till login
- */
 @WebServlet(name = "LogoutServlet", urlPatterns = {"/logout"})
 public class LogoutServlet extends HttpServlet {
 
@@ -20,19 +16,16 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Hämta sessionen (skapa inte en ny om den inte finns)
         HttpSession session = request.getSession(false);
 
         if (session != null) {
             String username = (String) session.getAttribute("username");
 
-            // Invalidera sessionen (tar bort alla attribut)
             session.invalidate();
 
             System.out.println("Användare utloggad: " + username);
         }
 
-        // Redirecta till login-sidan
         response.sendRedirect(request.getContextPath() + "/login");
     }
 

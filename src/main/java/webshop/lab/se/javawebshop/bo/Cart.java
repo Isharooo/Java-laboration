@@ -4,47 +4,30 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Shopping Cart (Varukorg)
- * Används för att hålla produkter i sessionen (betyg 3)
- */
 public class Cart {
 
-    // Map: productId -> CartItem
     private Map<Integer, CartItem> items;
 
     public Cart() {
         this.items = new HashMap<>();
     }
 
-    /**
-     * Lägger till en produkt i varukorgen
-     * Om produkten redan finns ökar vi kvantiteten
-     */
     public void addProduct(Product product, int quantity) {
         int productId = product.getProductId();
 
         if (items.containsKey(productId)) {
-            // Produkten finns redan - öka kvantitet
             CartItem existingItem = items.get(productId);
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
         } else {
-            // Ny produkt - lägg till
             CartItem newItem = new CartItem(product, quantity);
             items.put(productId, newItem);
         }
     }
 
-    /**
-     * Tar bort en produkt från varukorgen
-     */
     public void removeProduct(int productId) {
         items.remove(productId);
     }
 
-    /**
-     * Uppdaterar kvantitet för en produkt
-     */
     public void updateQuantity(int productId, int quantity) {
         if (quantity <= 0) {
             removeProduct(productId);
@@ -53,16 +36,10 @@ public class Cart {
         }
     }
 
-    /**
-     * Tömmer hela varukorgen
-     */
     public void clear() {
         items.clear();
     }
 
-    /**
-     * Beräknar totalpriset för alla produkter i varukorgen
-     */
     public BigDecimal getTotalPrice() {
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem item : items.values()) {
@@ -71,9 +48,6 @@ public class Cart {
         return total;
     }
 
-    /**
-     * Returnerar totalt antal produkter (summerar alla kvantiteter)
-     */
     public int getTotalQuantity() {
         int total = 0;
         for (CartItem item : items.values()) {
@@ -82,23 +56,15 @@ public class Cart {
         return total;
     }
 
-    /**
-     * Kontrollerar om varukorgen är tom
-     */
     public boolean isEmpty() {
         return items.isEmpty();
     }
 
-    /**
-     * Returnerar alla items i varukorgen
-     */
     public Map<Integer, CartItem> getItems() {
         return items;
     }
 
-    /**
-     * Inre klass för att representera en produkt i varukorgen
-     */
+
     public static class CartItem {
         private Product product;
         private int quantity;

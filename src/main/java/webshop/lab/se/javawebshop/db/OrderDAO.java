@@ -7,10 +7,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object för ordrar
- * VIKTIGT: Använder transaktioner för betyg 4
- */
 public class OrderDAO {
 
     private DBManager dbManager;
@@ -21,21 +17,6 @@ public class OrderDAO {
         this.productDAO = new ProductDAO();
     }
 
-    /**
-     * Skapar en order MED TRANSAKTION (betyg 4 krav!)
-     *
-     * Steg:
-     * 1. Starta transaktion (setAutoCommit(false))
-     * 2. Kontrollera lagersaldo för alla produkter
-     * 3. Skapa order
-     * 4. Skapa order_items
-     * 5. Minska lagersaldo för varje produkt
-     * 6. Commit transaktion
-     * 7. Vid fel: Rollback
-     *
-     * @param order Order-objekt med orderItems
-     * @return true om ordern skapades
-     */
     public boolean createOrder(Order order) {
         Connection conn = null;
         PreparedStatement pstmtOrder = null;
@@ -44,11 +25,9 @@ public class OrderDAO {
         try {
             conn = dbManager.getConnection();
 
-            // VIKTIGT FÖR BETYG 4: Starta transaktion
             conn.setAutoCommit(false);
             System.out.println("Transaktion startad för order");
 
-            // Steg 1: Kontrollera lagersaldo för alla produkter FÖRST
             for (OrderItem item : order.getOrderItems()) {
                 if (!productDAO.checkStock(conn, item.getProductId(), item.getQuantity())) {
                     throw new SQLException("Otillräckligt lagersaldo för produkt ID: " + item.getProductId());
@@ -56,7 +35,6 @@ public class OrderDAO {
             }
             System.out.println("Lagersaldokontroll OK");
 
-            // Steg 2: Skapa själva ordern
             String sqlOrder = "INSERT INTO orders (user_id, status, total_amount) VALUES (?, ?, ?)";
             pstmtOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
 
@@ -70,7 +48,6 @@ public class OrderDAO {
                 throw new SQLException("Misslyckades med att skapa order");
             }
 
-            // Hämta genererat order_id
             ResultSet generatedKeys = pstmtOrder.getGeneratedKeys();
             if (generatedKeys.next()) {
                 order.setOrderId(generatedKeys.getInt(1));
@@ -80,19 +57,16 @@ public class OrderDAO {
 
             System.out.println("Order skapad med ID: " + order.getOrderId());
 
-            // Steg 3: Skapa order_items och minska lagersaldo
             String sqlOrderItem = "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)";
             pstmtOrderItem = conn.prepareStatement(sqlOrderItem);
 
             for (OrderItem item : order.getOrderItems()) {
-                // Lägg till orderrad
                 pstmtOrderItem.setInt(1, order.getOrderId());
                 pstmtOrderItem.setInt(2, item.getProductId());
                 pstmtOrderItem.setInt(3, item.getQuantity());
                 pstmtOrderItem.setBigDecimal(4, item.getPrice());
                 pstmtOrderItem.executeUpdate();
 
-                // Minska lagersaldo (negativt tal)
                 boolean stockUpdated = productDAO.updateStock(conn, item.getProductId(), -item.getQuantity());
                 if (!stockUpdated) {
                     throw new SQLException("Misslyckades med att uppdatera lagersaldo för produkt ID: " + item.getProductId());
@@ -101,7 +75,6 @@ public class OrderDAO {
 
             System.out.println("Order_items skapade och lagersaldo uppdaterat");
 
-            // VIKTIGT FÖR BETYG 4: Commit transaktion
             conn.commit();
             System.out.println("Transaktion committad - Order " + order.getOrderId() + " är klar!");
 
@@ -111,7 +84,6 @@ public class OrderDAO {
             System.err.println("Fel vid skapande av order: " + e.getMessage());
             e.printStackTrace();
 
-            // VIKTIGT FÖR BETYG 4: Rollback vid fel
             if (conn != null) {
                 try {
                     conn.rollback();
@@ -124,7 +96,6 @@ public class OrderDAO {
             return false;
 
         } finally {
-            // Stäng resurser och återställ autoCommit
             if (pstmtOrderItem != null) {
                 try { pstmtOrderItem.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
@@ -142,12 +113,6 @@ public class OrderDAO {
         }
     }
 
-    /**
-     * Hämtar en order baserat på ID
-     *
-     * @param orderId Order-ID
-     * @return Order-objekt med orderItems, eller null
-     */
     public Order getOrderById(int orderId) {
         String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
@@ -167,7 +132,6 @@ public class OrderDAO {
 
             if (rs.next()) {
                 Order order = extractOrderFromResultSet(rs);
-                // Hämta orderrader
                 order.setOrderItems(getOrderItems(orderId));
                 return order;
             }
@@ -182,12 +146,6 @@ public class OrderDAO {
         return null;
     }
 
-    /**
-     * Hämtar alla ordrar för en användare
-     *
-     * @param userId Användar-ID
-     * @return Lista med ordrar
-     */
     public List<Order> getOrdersByUser(int userId) {
         String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
@@ -209,7 +167,6 @@ public class OrderDAO {
 
             while (rs.next()) {
                 Order order = extractOrderFromResultSet(rs);
-                // Hämta orderrader för varje order
                 order.setOrderItems(getOrderItems(order.getOrderId()));
                 orders.add(order);
             }
@@ -224,11 +181,6 @@ public class OrderDAO {
         return orders;
     }
 
-    /**
-     * Hämtar alla ordrar (för admin/warehouse)
-     *
-     * @return Lista med alla ordrar
-     */
     public List<Order> getAllOrders() {
         String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
@@ -247,7 +199,6 @@ public class OrderDAO {
 
             while (rs.next()) {
                 Order order = extractOrderFromResultSet(rs);
-                // Hämta orderrader
                 order.setOrderItems(getOrderItems(order.getOrderId()));
                 orders.add(order);
             }
@@ -262,9 +213,6 @@ public class OrderDAO {
         return orders;
     }
 
-    /**
-     * Hämtar alla ordrar med en specifik status
-     */
     public List<Order> getOrdersByStatus(String status) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
@@ -291,14 +239,6 @@ public class OrderDAO {
         return orders;
     }
 
-    /**
-     * Uppdaterar status för en order
-     * Används för warehouse-personal att "packa" ordrar (betyg 5)
-     *
-     * @param orderId Order-ID
-     * @param status Ny status ("pending", "packed", "shipped")
-     * @return true om statusen uppdaterades
-     */
     public boolean updateOrderStatus(int orderId, String status) {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
         Connection conn = null;
@@ -328,12 +268,6 @@ public class OrderDAO {
         return false;
     }
 
-    /**
-     * Hämtar orderrader för en specifik order
-     *
-     * @param orderId Order-ID
-     * @return Lista med OrderItem
-     */
     public List<OrderItem> getOrderItems(int orderId) {
         String sql = "SELECT oi.order_item_id, oi.order_id, oi.product_id, oi.quantity, oi.price, p.name AS product_name " +
                 "FROM order_items oi " +
@@ -366,9 +300,6 @@ public class OrderDAO {
         return orderItems;
     }
 
-    /**
-     * Hjälpmetod för att extrahera Order från ResultSet
-     */
     private Order extractOrderFromResultSet(ResultSet rs) throws SQLException {
         Order order = new Order();
         order.setOrderId(rs.getInt("order_id"));
@@ -380,9 +311,6 @@ public class OrderDAO {
         return order;
     }
 
-    /**
-     * Hjälpmetod för att extrahera OrderItem från ResultSet
-     */
     private OrderItem extractOrderItemFromResultSet(ResultSet rs) throws SQLException {
         OrderItem item = new OrderItem();
         item.setOrderItemId(rs.getInt("order_item_id"));
@@ -395,9 +323,6 @@ public class OrderDAO {
         return item;
     }
 
-    /**
-     * Hjälpmetod för att stänga resurser
-     */
     private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
         if (rs != null) {
             try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }

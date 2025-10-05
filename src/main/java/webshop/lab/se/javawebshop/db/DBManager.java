@@ -7,10 +7,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * Singleton-klass för att hantera databasanslutningar
- * Läser konfiguration från db.properties
- */
 public class DBManager {
 
     private static DBManager instance;
@@ -19,15 +15,11 @@ public class DBManager {
     private String password;
     private String driver;
 
-    // Privat konstruktor (Singleton pattern)
     private DBManager() {
         loadProperties();
         loadDriver();
     }
 
-    /**
-     * Hämtar singleton-instansen av DBManager
-     */
     public static synchronized DBManager getInstance() {
         if (instance == null) {
             instance = new DBManager();
@@ -35,13 +27,9 @@ public class DBManager {
         return instance;
     }
 
-    /**
-     * Laddar databasegenskaper från db.properties
-     */
     private void loadProperties() {
         Properties props = new Properties();
 
-        // Försök läsa från classpath (resources-mappen)
         try (InputStream input = getClass().getClassLoader()
                 .getResourceAsStream("db.properties")) {
 
@@ -56,7 +44,6 @@ public class DBManager {
             this.password = props.getProperty("db.password");
             this.driver = props.getProperty("db.driver");
 
-            // Validera att alla properties finns
             if (url == null || username == null || password == null || driver == null) {
                 throw new RuntimeException("db.properties måste innehålla: db.url, db.username, db.password, db.driver");
             }
@@ -68,9 +55,6 @@ public class DBManager {
         }
     }
 
-    /**
-     * Laddar JDBC-drivrutinen
-     */
     private void loadDriver() {
         try {
             Class.forName(driver);
@@ -80,12 +64,6 @@ public class DBManager {
         }
     }
 
-    /**
-     * Hämtar en ny databasanslutning
-     *
-     * @return Connection-objekt
-     * @throws SQLException om anslutning misslyckas
-     */
     public Connection getConnection() throws SQLException {
         try {
             Connection conn = DriverManager.getConnection(url, username, password);
@@ -97,11 +75,6 @@ public class DBManager {
         }
     }
 
-    /**
-     * Stänger en databasanslutning säkert
-     *
-     * @param conn Connection att stänga
-     */
     public void closeConnection(Connection conn) {
         if (conn != null) {
             try {
@@ -113,11 +86,6 @@ public class DBManager {
         }
     }
 
-    /**
-     * Testar databasanslutningen
-     *
-     * @return true om anslutning fungerar, annars false
-     */
     public boolean testConnection() {
         try (Connection conn = getConnection()) {
             return conn != null && !conn.isClosed();
@@ -127,7 +95,6 @@ public class DBManager {
         }
     }
 
-    // Getters för debugging (valfritt)
     public String getUrl() {
         return url;
     }

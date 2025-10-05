@@ -6,10 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data Access Object för produkter
- * Hanterar lagersaldo (betyg 4)
- */
 public class ProductDAO {
 
     private DBManager dbManager;
@@ -18,11 +14,6 @@ public class ProductDAO {
         this.dbManager = DBManager.getInstance();
     }
 
-    /**
-     * Hämtar alla produkter med kategorinamn (JOIN)
-     *
-     * @return Lista med alla produkter
-     */
     public List<Product> getAllProducts() {
         String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
                 "c.name AS category_name " +
@@ -54,12 +45,6 @@ public class ProductDAO {
         return products;
     }
 
-    /**
-     * Hämtar produkter baserat på kategori
-     *
-     * @param categoryId Kategori-ID
-     * @return Lista med produkter i kategorin
-     */
     public List<Product> getProductsByCategory(int categoryId) {
         String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
                 "c.name AS category_name " +
@@ -94,12 +79,6 @@ public class ProductDAO {
         return products;
     }
 
-    /**
-     * Hämtar en produkt baserat på ID
-     *
-     * @param productId Produkt-ID
-     * @return Product-objekt eller null
-     */
     public Product getProductById(int productId) {
         String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
                 "c.name AS category_name " +
@@ -132,13 +111,6 @@ public class ProductDAO {
         return null;
     }
 
-    /**
-     * Skapar en ny produkt
-     * Används för admin-funktionalitet (betyg 5)
-     *
-     * @param product Product-objekt att skapa
-     * @return true om produkten skapades
-     */
     public boolean createProduct(Product product) {
         String sql = "INSERT INTO products (category_id, name, price, stock) VALUES (?, ?, ?, ?)";
 
@@ -175,13 +147,6 @@ public class ProductDAO {
         return false;
     }
 
-    /**
-     * Uppdaterar en befintlig produkt
-     * Används för admin-funktionalitet (betyg 5)
-     *
-     * @param product Product-objekt med uppdaterad information
-     * @return true om produkten uppdaterades
-     */
     public boolean updateProduct(Product product) {
         String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, stock = ? " +
                 "WHERE product_id = ?";
@@ -216,13 +181,6 @@ public class ProductDAO {
         return false;
     }
 
-    /**
-     * Tar bort en produkt
-     * Används för admin-funktionalitet (betyg 5)
-     *
-     * @param productId ID för produkten att ta bort
-     * @return true om produkten togs bort
-     */
     public boolean deleteProduct(int productId) {
         String sql = "DELETE FROM products WHERE product_id = ?";
         Connection conn = null;
@@ -250,14 +208,6 @@ public class ProductDAO {
         return false;
     }
 
-    /**
-     * Uppdaterar lagersaldo för en produkt
-     * VIKTIGT för betyg 4 - används vid orderläggning
-     *
-     * @param productId ID för produkten
-     * @param quantityChange Förändring i lagersaldo (negativt för minskning)
-     * @return true om lagersaldot uppdaterades
-     */
     public boolean updateStock(int productId, int quantityChange) {
         String sql = "UPDATE products SET stock = stock + ? WHERE product_id = ?";
         Connection conn = null;
@@ -288,28 +238,11 @@ public class ProductDAO {
         return false;
     }
 
-    /**
-     * Kontrollerar om tillräckligt lagersaldo finns (används vid orderläggning)
-     * VIKTIGT för betyg 4
-     *
-     * @param productId Produkt-ID
-     * @param quantity Önskad kvantitet
-     * @return true om tillräckligt lager finns
-     */
     public boolean checkStock(int productId, int quantity) {
         Product product = getProductById(productId);
         return product != null && product.hasStock(quantity);
     }
 
-    /**
-     * Uppdaterar lagersaldo med given Connection (för transaktioner)
-     * Används av OrderDAO för att dela samma transaktion
-     *
-     * @param conn Connection att använda
-     * @param productId ID för produkten
-     * @param quantityChange Förändring i lagersaldo
-     * @return true om lagersaldot uppdaterades
-     */
     public boolean updateStock(Connection conn, int productId, int quantityChange) throws SQLException {
         String sql = "UPDATE products SET stock = stock + ? WHERE product_id = ?";
         PreparedStatement pstmt = null;
@@ -334,18 +267,9 @@ public class ProductDAO {
             if (pstmt != null) {
                 try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
-            // OBS: Stäng INTE Connection här - den ägs av anroparen
         }
     }
 
-    /**
-     * Kontrollerar lagersaldo med given Connection (för transaktioner)
-     *
-     * @param conn Connection att använda
-     * @param productId Produkt-ID
-     * @param quantity Önskad kvantitet
-     * @return true om tillräckligt lager finns
-     */
     public boolean checkStock(Connection conn, int productId, int quantity) throws SQLException {
         String sql = "SELECT stock FROM products WHERE product_id = ?";
         PreparedStatement pstmt = null;
@@ -371,13 +295,9 @@ public class ProductDAO {
             if (pstmt != null) {
                 try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
-            // OBS: Stäng INTE Connection här
         }
     }
 
-    /**
-     * Hjälpmetod för att extrahera Product från ResultSet
-     */
     private Product extractProductFromResultSet(ResultSet rs) throws SQLException {
         Product product = new Product();
         product.setProductId(rs.getInt("product_id"));
@@ -386,15 +306,11 @@ public class ProductDAO {
         product.setPrice(rs.getBigDecimal("price"));
         product.setStock(rs.getInt("stock"));
 
-        // Kategorinamn från JOIN
         product.setCategoryName(rs.getString("category_name"));
 
         return product;
     }
 
-    /**
-     * Hjälpmetod för att stänga resurser
-     */
     private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
         if (rs != null) {
             try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }

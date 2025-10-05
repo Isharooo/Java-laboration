@@ -1,13 +1,9 @@
 package webshop.lab.se.javawebshop.bo;
 
-/**
- * Business Object för produktkategorier
- */
 public class Category {
     private int categoryId;
     private String name;
 
-    // Konstruktorer
     public Category() {
     }
 
@@ -20,7 +16,6 @@ public class Category {
         this.name = name;
     }
 
-    // Getters och Setters
     public int getCategoryId() {
         return categoryId;
     }
