@@ -1,7 +1,6 @@
 package webshop.lab.se.javawebshop.bo;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import java.util.List;
 public class Order {
     private int orderId;
     private int userId;
-    private LocalDateTime orderDate;
     private String status; // "pending", "packed", "shipped"
     private BigDecimal totalAmount;
 
@@ -27,11 +25,9 @@ public class Order {
         this.orderItems = new ArrayList<>();
     }
 
-    public Order(int orderId, int userId, LocalDateTime orderDate,
-                 String status, BigDecimal totalAmount) {
+    public Order(int orderId, int userId, String status, BigDecimal totalAmount) {
         this.orderId = orderId;
         this.userId = userId;
-        this.orderDate = orderDate;
         this.status = status;
         this.totalAmount = totalAmount;
         this.orderItems = new ArrayList<>();
@@ -59,14 +55,6 @@ public class Order {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
     }
 
     public String getStatus() {

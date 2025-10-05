@@ -26,7 +26,7 @@ public class UserDAO {
      * @return User-objekt eller null om användaren inte finns
      */
     public User findByUsername(String username) {
-        String sql = "SELECT user_id, username, password, role, created_at FROM users WHERE username = ?";
+        String sql = "SELECT user_id, username, password, role FROM users WHERE username = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -59,7 +59,7 @@ public class UserDAO {
      * @return User-objekt eller null
      */
     public User findById(int userId) {
-        String sql = "SELECT user_id, username, password, role, created_at FROM users WHERE user_id = ?";
+        String sql = "SELECT user_id, username, password, role FROM users WHERE user_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -92,7 +92,7 @@ public class UserDAO {
      * @return Lista med alla användare
      */
     public List<User> getAllUsers() {
-        String sql = "SELECT user_id, username, password, role, created_at FROM users ORDER BY username";
+        String sql = "SELECT user_id, username, password, role FROM users ORDER BY username";
         List<User> users = new ArrayList<>();
         Connection conn = null;
         Statement stmt = null;
@@ -265,11 +265,6 @@ public class UserDAO {
         user.setUsername(rs.getString("username"));
         user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
-
-        Timestamp timestamp = rs.getTimestamp("created_at");
-        if (timestamp != null) {
-            user.setCreatedAt(timestamp.toLocalDateTime());
-        }
 
         return user;
     }

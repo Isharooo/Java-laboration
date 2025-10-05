@@ -1,7 +1,5 @@
 package webshop.lab.se.javawebshop.bo;
 
-import java.time.LocalDateTime;
-
 /**
  * Business Object för användare
  * Representerar en rad i users-tabellen
@@ -11,7 +9,6 @@ public class User {
     private String username;
     private String password;
     private String role; // "customer", "admin", "warehouse"
-    private LocalDateTime createdAt;
 
     // Konstruktor - tom
     public User() {
@@ -63,14 +60,6 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     // Hjälpmetoder för rollkontroll

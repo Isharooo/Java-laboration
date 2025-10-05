@@ -123,10 +123,8 @@ public class AdminProductsServlet extends HttpServlet {
         try {
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
             String name = request.getParameter("name");
-            String description = request.getParameter("description");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
-            String imageUrl = request.getParameter("imageUrl");
 
             // Validera
             if (name == null || name.trim().isEmpty()) {
@@ -141,7 +139,7 @@ public class AdminProductsServlet extends HttpServlet {
                 throw new IllegalArgumentException("Lagersaldo kan inte vara negativt");
             }
 
-            Product product = new Product(categoryId, name.trim(), description, price, stock, imageUrl);
+            Product product = new Product(categoryId, name.trim(), price, stock);
             boolean success = itemFacade.createProduct(product);
 
             if (success) {
@@ -169,10 +167,8 @@ public class AdminProductsServlet extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("productId"));
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
             String name = request.getParameter("name");
-            String description = request.getParameter("description");
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
-            String imageUrl = request.getParameter("imageUrl");
 
             // Validera
             if (name == null || name.trim().isEmpty()) {
@@ -187,7 +183,7 @@ public class AdminProductsServlet extends HttpServlet {
                 throw new IllegalArgumentException("Lagersaldo kan inte vara negativt");
             }
 
-            Product product = new Product(productId, categoryId, name.trim(), description, price, stock, imageUrl);
+            Product product = new Product(productId, categoryId, name.trim(), price, stock);
             boolean success = itemFacade.updateProduct(product);
 
             if (success) {

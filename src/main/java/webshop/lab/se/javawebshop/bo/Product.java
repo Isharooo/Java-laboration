@@ -1,7 +1,6 @@
 package webshop.lab.se.javawebshop.bo;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * Business Object för produkter
@@ -11,11 +10,8 @@ public class Product {
     private int productId;
     private int categoryId;
     private String name;
-    private String description;
     private BigDecimal price;
     private int stock;
-    private String imageUrl;
-    private LocalDateTime createdAt;
 
     // Extra fält för att hålla kategorinamn (från JOIN)
     private String categoryName;
@@ -24,25 +20,19 @@ public class Product {
     public Product() {
     }
 
-    public Product(int productId, int categoryId, String name, String description,
-                   BigDecimal price, int stock, String imageUrl) {
+    public Product(int productId, int categoryId, String name, BigDecimal price, int stock) {
         this.productId = productId;
         this.categoryId = categoryId;
         this.name = name;
-        this.description = description;
         this.price = price;
         this.stock = stock;
-        this.imageUrl = imageUrl;
     }
 
-    public Product(int categoryId, String name, String description,
-                   BigDecimal price, int stock, String imageUrl) {
+    public Product(int categoryId, String name, BigDecimal price, int stock) {
         this.categoryId = categoryId;
         this.name = name;
-        this.description = description;
         this.price = price;
         this.stock = stock;
-        this.imageUrl = imageUrl;
     }
 
     // Getters och Setters
@@ -70,14 +60,6 @@ public class Product {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public BigDecimal getPrice() {
         return price;
     }
@@ -92,22 +74,6 @@ public class Product {
 
     public void setStock(int stock) {
         this.stock = stock;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getCategoryName() {

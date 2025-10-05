@@ -3,7 +3,6 @@ package webshop.lab.se.javawebshop.db;
 import webshop.lab.se.javawebshop.bo.Order;
 import webshop.lab.se.javawebshop.bo.OrderItem;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +149,7 @@ public class OrderDAO {
      * @return Order-objekt med orderItems, eller null
      */
     public Order getOrderById(int orderId) {
-        String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status, o.total_amount, u.username " +
+        String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
                 "JOIN users u ON o.user_id = u.user_id " +
                 "WHERE o.order_id = ?";
@@ -190,11 +189,11 @@ public class OrderDAO {
      * @return Lista med ordrar
      */
     public List<Order> getOrdersByUser(int userId) {
-        String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status, o.total_amount, u.username " +
+        String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
                 "JOIN users u ON o.user_id = u.user_id " +
                 "WHERE o.user_id = ? " +
-                "ORDER BY o.order_date DESC";
+                "ORDER BY o.order_id DESC";
 
         List<Order> orders = new ArrayList<>();
         Connection conn = null;
@@ -231,10 +230,10 @@ public class OrderDAO {
      * @return Lista med alla ordrar
      */
     public List<Order> getAllOrders() {
-        String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status, o.total_amount, u.username " +
+        String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
                 "FROM orders o " +
                 "JOIN users u ON o.user_id = u.user_id " +
-                "ORDER BY o.order_date DESC";
+                "ORDER BY o.order_id DESC";
 
         List<Order> orders = new ArrayList<>();
         Connection conn = null;
@@ -264,29 +263,33 @@ public class OrderDAO {
     }
 
     /**
-     *
      * Hämtar alla ordrar med en specifik status
      */
     public List<Order> getOrdersByStatus(String status) {
         List<Order> orders = new ArrayList<>();
-        String sql = "SELECT o.order_id, o.user_id, o.order_date, o.status, o.total_amount, " +"u.username " +"FROM orders o " +"JOIN users u ON o.user_id = u.user_id " +"WHERE o.status = ? " +"ORDER BY o.order_date DESC";
+        String sql = "SELECT o.order_id, o.user_id, o.status, o.total_amount, u.username " +
+                "FROM orders o " +
+                "JOIN users u ON o.user_id = u.user_id " +
+                "WHERE o.status = ? " +
+                "ORDER BY o.order_id DESC";
+
         try (Connection conn = dbManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, status);
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
-                Order order = new Order();
-                order.setOrderId(rs.getInt("order_id"));
-                order.setUserId(rs.getInt("user_id"));
-                order.setOrderDate(rs.getTimestamp("order_date").toLocalDateTime());
-                order.setStatus(rs.getString("status"));
-                order.setTotalAmount(rs.getBigDecimal("total_amount"));
-                order.setUsername(rs.getString("username"));
-                orders.add(order);}
+                Order order = extractOrderFromResultSet(rs);
+                order.setOrderItems(getOrderItems(order.getOrderId()));
+                orders.add(order);
+            }
         } catch (SQLException e) {
             System.err.println("Fel vid hämtning av ordrar efter status: " + e.getMessage());
-            e.printStackTrace();}
-        return orders;}
+            e.printStackTrace();
+        }
+        return orders;
+    }
 
     /**
      * Uppdaterar status för en order
@@ -370,12 +373,6 @@ public class OrderDAO {
         Order order = new Order();
         order.setOrderId(rs.getInt("order_id"));
         order.setUserId(rs.getInt("user_id"));
-
-        Timestamp timestamp = rs.getTimestamp("order_date");
-        if (timestamp != null) {
-            order.setOrderDate(timestamp.toLocalDateTime());
-        }
-
         order.setStatus(rs.getString("status"));
         order.setTotalAmount(rs.getBigDecimal("total_amount"));
         order.setUsername(rs.getString("username"));

@@ -23,7 +23,7 @@ public class CategoryDAO {
      * @return Lista med alla kategorier
      */
     public List<Category> getAllCategories() {
-        String sql = "SELECT category_id, name, description, created_at FROM categories ORDER BY name";
+        String sql = "SELECT category_id, name FROM categories ORDER BY name";
         List<Category> categories = new ArrayList<>();
         Connection conn = null;
         Statement stmt = null;
@@ -55,7 +55,7 @@ public class CategoryDAO {
      * @return Category-objekt eller null
      */
     public Category getCategoryById(int categoryId) {
-        String sql = "SELECT category_id, name, description, created_at FROM categories WHERE category_id = ?";
+        String sql = "SELECT category_id, name FROM categories WHERE category_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -89,7 +89,7 @@ public class CategoryDAO {
      * @return true om kategorin skapades
      */
     public boolean createCategory(Category category) {
-        String sql = "INSERT INTO categories (name, description) VALUES (?, ?)";
+        String sql = "INSERT INTO categories (name) VALUES (?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -98,7 +98,6 @@ public class CategoryDAO {
             pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             pstmt.setString(1, category.getName());
-            pstmt.setString(2, category.getDescription());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -129,7 +128,7 @@ public class CategoryDAO {
      * @return true om kategorin uppdaterades
      */
     public boolean updateCategory(Category category) {
-        String sql = "UPDATE categories SET name = ?, description = ? WHERE category_id = ?";
+        String sql = "UPDATE categories SET name = ? WHERE category_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
@@ -138,8 +137,7 @@ public class CategoryDAO {
             pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, category.getName());
-            pstmt.setString(2, category.getDescription());
-            pstmt.setInt(3, category.getCategoryId());
+            pstmt.setInt(2, category.getCategoryId());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -200,13 +198,6 @@ public class CategoryDAO {
         Category category = new Category();
         category.setCategoryId(rs.getInt("category_id"));
         category.setName(rs.getString("name"));
-        category.setDescription(rs.getString("description"));
-
-        Timestamp timestamp = rs.getTimestamp("created_at");
-        if (timestamp != null) {
-            category.setCreatedAt(timestamp.toLocalDateTime());
-        }
-
         return category;
     }
 

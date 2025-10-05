@@ -115,7 +115,6 @@ public class AdminCategoriesServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String name = request.getParameter("name");
-        String description = request.getParameter("description");
 
         // Validera
         if (name == null || name.trim().isEmpty()) {
@@ -124,7 +123,7 @@ public class AdminCategoriesServlet extends HttpServlet {
             return;
         }
 
-        Category category = new Category(name.trim(), description);
+        Category category = new Category(name.trim());
         boolean success = itemFacade.createCategory(category);
 
         if (success) {
@@ -145,7 +144,6 @@ public class AdminCategoriesServlet extends HttpServlet {
         try {
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
             String name = request.getParameter("name");
-            String description = request.getParameter("description");
 
             // Validera
             if (name == null || name.trim().isEmpty()) {
@@ -156,7 +154,7 @@ public class AdminCategoriesServlet extends HttpServlet {
                 return;
             }
 
-            Category category = new Category(categoryId, name.trim(), description);
+            Category category = new Category(categoryId, name.trim());
             boolean success = itemFacade.updateCategory(category);
 
             if (success) {

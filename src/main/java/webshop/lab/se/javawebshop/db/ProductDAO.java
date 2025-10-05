@@ -2,7 +2,6 @@ package webshop.lab.se.javawebshop.db;
 
 import webshop.lab.se.javawebshop.bo.Product;
 
-import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,8 @@ public class ProductDAO {
      * @return Lista med alla produkter
      */
     public List<Product> getAllProducts() {
-        String sql = "SELECT p.product_id, p.category_id, p.name, p.description, " +
-                "p.price, p.stock, p.image_url, p.created_at, c.name AS category_name " +
+        String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
+                "c.name AS category_name " +
                 "FROM products p " +
                 "JOIN categories c ON p.category_id = c.category_id " +
                 "ORDER BY c.name, p.name";
@@ -62,8 +61,8 @@ public class ProductDAO {
      * @return Lista med produkter i kategorin
      */
     public List<Product> getProductsByCategory(int categoryId) {
-        String sql = "SELECT p.product_id, p.category_id, p.name, p.description, " +
-                "p.price, p.stock, p.image_url, p.created_at, c.name AS category_name " +
+        String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
+                "c.name AS category_name " +
                 "FROM products p " +
                 "JOIN categories c ON p.category_id = c.category_id " +
                 "WHERE p.category_id = ? " +
@@ -102,8 +101,8 @@ public class ProductDAO {
      * @return Product-objekt eller null
      */
     public Product getProductById(int productId) {
-        String sql = "SELECT p.product_id, p.category_id, p.name, p.description, " +
-                "p.price, p.stock, p.image_url, p.created_at, c.name AS category_name " +
+        String sql = "SELECT p.product_id, p.category_id, p.name, p.price, p.stock, " +
+                "c.name AS category_name " +
                 "FROM products p " +
                 "JOIN categories c ON p.category_id = c.category_id " +
                 "WHERE p.product_id = ?";
@@ -141,8 +140,7 @@ public class ProductDAO {
      * @return true om produkten skapades
      */
     public boolean createProduct(Product product) {
-        String sql = "INSERT INTO products (category_id, name, description, price, stock, image_url) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (category_id, name, price, stock) VALUES (?, ?, ?, ?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -153,10 +151,8 @@ public class ProductDAO {
 
             pstmt.setInt(1, product.getCategoryId());
             pstmt.setString(2, product.getName());
-            pstmt.setString(3, product.getDescription());
-            pstmt.setBigDecimal(4, product.getPrice());
-            pstmt.setInt(5, product.getStock());
-            pstmt.setString(6, product.getImageUrl());
+            pstmt.setBigDecimal(3, product.getPrice());
+            pstmt.setInt(4, product.getStock());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -187,8 +183,8 @@ public class ProductDAO {
      * @return true om produkten uppdaterades
      */
     public boolean updateProduct(Product product) {
-        String sql = "UPDATE products SET category_id = ?, name = ?, description = ?, " +
-                "price = ?, stock = ?, image_url = ? WHERE product_id = ?";
+        String sql = "UPDATE products SET category_id = ?, name = ?, price = ?, stock = ? " +
+                "WHERE product_id = ?";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -199,11 +195,9 @@ public class ProductDAO {
 
             pstmt.setInt(1, product.getCategoryId());
             pstmt.setString(2, product.getName());
-            pstmt.setString(3, product.getDescription());
-            pstmt.setBigDecimal(4, product.getPrice());
-            pstmt.setInt(5, product.getStock());
-            pstmt.setString(6, product.getImageUrl());
-            pstmt.setInt(7, product.getProductId());
+            pstmt.setBigDecimal(3, product.getPrice());
+            pstmt.setInt(4, product.getStock());
+            pstmt.setInt(5, product.getProductId());
 
             int rowsAffected = pstmt.executeUpdate();
 
@@ -308,45 +302,6 @@ public class ProductDAO {
     }
 
     /**
-     * Hjälpmetod för att extrahera Product från ResultSet
-     */
-    private Product extractProductFromResultSet(ResultSet rs) throws SQLException {
-        Product product = new Product();
-        product.setProductId(rs.getInt("product_id"));
-        product.setCategoryId(rs.getInt("category_id"));
-        product.setName(rs.getString("name"));
-        product.setDescription(rs.getString("description"));
-        product.setPrice(rs.getBigDecimal("price"));
-        product.setStock(rs.getInt("stock"));
-        product.setImageUrl(rs.getString("image_url"));
-
-        Timestamp timestamp = rs.getTimestamp("created_at");
-        if (timestamp != null) {
-            product.setCreatedAt(timestamp.toLocalDateTime());
-        }
-
-        // Kategorinamn från JOIN
-        product.setCategoryName(rs.getString("category_name"));
-
-        return product;
-    }
-
-    /**
-     * Hjälpmetod för att stänga resurser
-     */
-    private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
-        if (rs != null) {
-            try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        if (stmt != null) {
-            try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-        if (conn != null) {
-            dbManager.closeConnection(conn);
-        }
-    }
-
-    /**
      * Uppdaterar lagersaldo med given Connection (för transaktioner)
      * Används av OrderDAO för att dela samma transaktion
      *
@@ -417,6 +372,38 @@ public class ProductDAO {
                 try { pstmt.close(); } catch (SQLException e) { e.printStackTrace(); }
             }
             // OBS: Stäng INTE Connection här
+        }
+    }
+
+    /**
+     * Hjälpmetod för att extrahera Product från ResultSet
+     */
+    private Product extractProductFromResultSet(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setProductId(rs.getInt("product_id"));
+        product.setCategoryId(rs.getInt("category_id"));
+        product.setName(rs.getString("name"));
+        product.setPrice(rs.getBigDecimal("price"));
+        product.setStock(rs.getInt("stock"));
+
+        // Kategorinamn från JOIN
+        product.setCategoryName(rs.getString("category_name"));
+
+        return product;
+    }
+
+    /**
+     * Hjälpmetod för att stänga resurser
+     */
+    private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
+        if (rs != null) {
+            try { rs.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        if (stmt != null) {
+            try { stmt.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+        if (conn != null) {
+            dbManager.closeConnection(conn);
         }
     }
 }
