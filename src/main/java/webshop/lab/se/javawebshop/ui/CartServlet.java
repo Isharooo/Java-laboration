@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.Cart;
 import webshop.lab.se.javawebshop.bo.Product;
-import webshop.lab.se.javawebshop.db.ProductDAO;
+import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
 
@@ -19,11 +19,11 @@ import java.io.IOException;
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
 
-    private ProductDAO productDAO;
+    private ItemFacade itemFacade;
 
     @Override
     public void init() throws ServletException {
-        productDAO = new ProductDAO();
+        itemFacade = new ItemFacade();
     }
 
     /**
@@ -115,8 +115,8 @@ public class CartServlet extends HttpServlet {
             String quantityParam = request.getParameter("quantity");
             int quantity = (quantityParam != null) ? Integer.parseInt(quantityParam) : 1;
 
-            // Hämta produkten från databasen
-            Product product = productDAO.getProductById(productId);
+            // Hämta produkten från databasen VIA FACADE
+            Product product = itemFacade.getProductById(productId);
 
             if (product != null && product.getStock() >= quantity) {
                 cart.addProduct(product, quantity);
@@ -152,8 +152,8 @@ public class CartServlet extends HttpServlet {
             int productId = Integer.parseInt(request.getParameter("productId"));
             int quantity = Integer.parseInt(request.getParameter("quantity"));
 
-            // Kontrollera lagersaldo
-            Product product = productDAO.getProductById(productId);
+            // Kontrollera lagersaldo VIA FACADE
+            Product product = itemFacade.getProductById(productId);
 
             if (product != null && product.getStock() >= quantity) {
                 cart.updateQuantity(productId, quantity);

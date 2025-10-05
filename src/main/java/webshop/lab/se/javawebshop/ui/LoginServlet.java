@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.User;
-import webshop.lab.se.javawebshop.db.UserDAO;
+import webshop.lab.se.javawebshop.bo.UserFacade;
 
 import java.io.IOException;
 
@@ -18,11 +18,11 @@ import java.io.IOException;
 @WebServlet(name = "LoginServlet", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
-    private UserDAO userDAO;
+    private UserFacade userFacade;
 
     @Override
     public void init() throws ServletException {
-        userDAO = new UserDAO();
+        userFacade = new UserFacade();
     }
 
     /**
@@ -56,8 +56,8 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Autentisera användaren
-        User user = userDAO.authenticateUser(username.trim(), password);
+        // Autentisera användaren VIA FACADE
+        User user = userFacade.login(username.trim(), password);
 
         if (user != null) {
             // Inloggning lyckades

@@ -8,9 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.Cart;
 import webshop.lab.se.javawebshop.bo.Order;
-import webshop.lab.se.javawebshop.bo.OrderItem;
 import webshop.lab.se.javawebshop.bo.User;
-import webshop.lab.se.javawebshop.db.OrderDAO;
+import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
 
@@ -21,11 +20,11 @@ import java.io.IOException;
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
 
-    private OrderDAO orderDAO;
+    private OrderFacade orderFacade;
 
     @Override
     public void init() throws ServletException {
-        orderDAO = new OrderDAO();
+        orderFacade = new OrderFacade();
     }
 
     /**
@@ -79,25 +78,10 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         try {
-            // Skapa Order-objekt
-            Order order = new Order();
-            order.setUserId(user.getUserId());
-            order.setStatus("pending");
-            order.setTotalAmount(cart.getTotalPrice());
+            // Skapa ordern VIA FACADE (inkluderar transaktion!)
+            Order order = orderFacade.createOrderFromCart(user.getUserId(), cart);
 
-            // Lägg till orderrader från varukorgen
-            for (Cart.CartItem cartItem : cart.getItems().values()) {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setProductId(cartItem.getProduct().getProductId());
-                orderItem.setQuantity(cartItem.getQuantity());
-                orderItem.setPrice(cartItem.getProduct().getPrice());
-                order.addOrderItem(orderItem);
-            }
-
-            // Skapa ordern i databasen (MED TRANSAKTION!)
-            boolean success = orderDAO.createOrder(order);
-
-            if (success) {
+            if (order != null) {
                 // Order skapades - töm varukorgen
                 cart.clear();
 

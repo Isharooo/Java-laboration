@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.Order;
-import webshop.lab.se.javawebshop.db.OrderDAO;
+import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
 
@@ -17,11 +17,11 @@ import java.io.IOException;
 @WebServlet(name = "OrderConfirmationServlet", urlPatterns = {"/order-confirmation"})
 public class OrderConfirmationServlet extends HttpServlet {
 
-    private OrderDAO orderDAO;
+    private OrderFacade orderFacade;
 
     @Override
     public void init() throws ServletException {
-        orderDAO = new OrderDAO();
+        orderFacade = new OrderFacade();
     }
 
     @Override
@@ -42,8 +42,8 @@ public class OrderConfirmationServlet extends HttpServlet {
             return;
         }
 
-        // Hämta ordern från databasen
-        Order order = orderDAO.getOrderById(orderId);
+        // Hämta ordern från databasen VIA FACADE
+        Order order = orderFacade.getOrderById(orderId);
 
         if (order != null) {
             request.setAttribute("order", order);

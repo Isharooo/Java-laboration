@@ -8,8 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.Category;
 import webshop.lab.se.javawebshop.bo.Product;
-import webshop.lab.se.javawebshop.db.CategoryDAO;
-import webshop.lab.se.javawebshop.db.ProductDAO;
+import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,13 +20,11 @@ import java.util.List;
 @WebServlet(name = "ProductsServlet", urlPatterns = {"/products"})
 public class ProductsServlet extends HttpServlet {
 
-    private ProductDAO productDAO;
-    private CategoryDAO categoryDAO;
+    private ItemFacade itemFacade;
 
     @Override
     public void init() throws ServletException {
-        productDAO = new ProductDAO();
-        categoryDAO = new CategoryDAO();
+        itemFacade = new ItemFacade();
     }
 
     @Override
@@ -41,8 +38,8 @@ public class ProductsServlet extends HttpServlet {
             return;
         }
 
-        // Hämta alla kategorier för menyn
-        List<Category> categories = categoryDAO.getAllCategories();
+        // Hämta alla kategorier för menyn VIA FACADE
+        List<Category> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
 
         // Kolla om vi ska filtrera på kategori
@@ -52,19 +49,19 @@ public class ProductsServlet extends HttpServlet {
         if (categoryParam != null && !categoryParam.isEmpty()) {
             try {
                 int categoryId = Integer.parseInt(categoryParam);
-                products = productDAO.getProductsByCategory(categoryId);
+                products = itemFacade.getProductsByCategory(categoryId);
 
                 // Hitta kategorinamnet för att visa i rubriken
-                Category selectedCategory = categoryDAO.getCategoryById(categoryId);
+                Category selectedCategory = itemFacade.getCategoryById(categoryId);
                 request.setAttribute("selectedCategory", selectedCategory);
 
             } catch (NumberFormatException e) {
                 // Ogiltig kategori-id, visa alla produkter
-                products = productDAO.getAllProducts();
+                products = itemFacade.getAllProducts();
             }
         } else {
             // Visa alla produkter
-            products = productDAO.getAllProducts();
+            products = itemFacade.getAllProducts();
         }
 
         request.setAttribute("products", products);
