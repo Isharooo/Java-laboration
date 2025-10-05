@@ -82,17 +82,17 @@ public class CheckoutServlet extends HttpServlet {
             Order order = orderFacade.createOrderFromCart(user.getUserId(), cart);
 
             if (order != null) {
-                // Order skapades - töm varukorgen
+                // Order skapades framgångsrikt!
+                System.out.println("Order " + order.getOrderId() + " skapad - redirectar till produkter");
+
+                // Töm varukorgen
                 cart.clear();
 
-                // Spara order-id i session för bekräftelsesidan
-                session.setAttribute("lastOrderId", order.getOrderId());
-
-                // Redirecta till bekräftelsesidan
-                response.sendRedirect(request.getContextPath() + "/order-confirmation");
+                // Redirect direkt till produkter (ny order kan börja)
+                response.sendRedirect(request.getContextPath() + "/products");
 
             } else {
-                // Något gick fel
+                // Något gick fel - visa felmeddelande
                 request.setAttribute("error", "Kunde inte skapa order. Kontrollera lagersaldo och försök igen.");
                 request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
             }

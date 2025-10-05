@@ -72,13 +72,6 @@ public class Cart {
     }
 
     /**
-     * Returnerar antal unika produkter i varukorgen
-     */
-    public int getItemCount() {
-        return items.size();
-    }
-
-    /**
      * Returnerar totalt antal produkter (summerar alla kvantiteter)
      */
     public int getTotalQuantity() {
