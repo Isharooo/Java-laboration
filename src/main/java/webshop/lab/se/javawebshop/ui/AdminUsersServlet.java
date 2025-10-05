@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import webshop.lab.se.javawebshop.bo.User;
-import webshop.lab.se.javawebshop.db.UserDAO;
+import webshop.lab.se.javawebshop.bo.UserFacade;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.List;
 @WebServlet(name = "AdminUsersServlet", urlPatterns = {"/admin/users"})
 public class AdminUsersServlet extends HttpServlet {
 
-    private UserDAO userDAO;
+    private UserFacade userFacade;
 
     @Override
     public void init() throws ServletException {
-        userDAO = new UserDAO();
+        userFacade = new UserFacade();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class AdminUsersServlet extends HttpServlet {
     private void listUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<User> users = userDAO.getAllUsers();
+        List<User> users = userFacade.getAllUsers();
         request.setAttribute("users", users);
         request.getRequestDispatcher("/WEB-INF/admin/users.jsp").forward(request, response);
     }
@@ -83,7 +83,8 @@ public class AdminUsersServlet extends HttpServlet {
             throws ServletException, IOException {
         // Sätt INGEN user-attribut så JSP vet att det är en ny användare
         request.removeAttribute("user");
-        request.getRequestDispatcher("/WEB-INF/admin/user-form.jsp").forward(request, response);}
+        request.getRequestDispatcher("/WEB-INF/admin/user-form.jsp").forward(request, response);
+    }
 
 
     /**
@@ -94,7 +95,7 @@ public class AdminUsersServlet extends HttpServlet {
 
         try {
             int userId = Integer.parseInt(request.getParameter("id"));
-            User user = userDAO.findById(userId);
+            User user = userFacade.getUserById(userId);
 
             if (user != null) {
                 request.setAttribute("user", user);
@@ -128,9 +129,9 @@ public class AdminUsersServlet extends HttpServlet {
             return;
         }
 
-        // Skapa användare
+        // Skapa användare VIA FACADE
         User user = new User(username.trim(), password, role);
-        boolean success = userDAO.createUser(user);
+        boolean success = userFacade.createUser(user);
 
         if (success) {
             request.setAttribute("success", "Användare skapad!");
@@ -158,14 +159,14 @@ public class AdminUsersServlet extends HttpServlet {
                     role == null || role.trim().isEmpty()) {
 
                 request.setAttribute("error", "Användarnamn och roll måste fyllas i");
-                User user = userDAO.findById(userId);
+                User user = userFacade.getUserById(userId);
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("/WEB-INF/admin/user-form.jsp").forward(request, response);
                 return;
             }
 
             User user = new User(userId, username.trim(), password, role);
-            boolean success = userDAO.updateUser(user);
+            boolean success = userFacade.updateUser(user);
 
             if (success) {
                 request.setAttribute("success", "Användare uppdaterad!");
@@ -194,7 +195,7 @@ public class AdminUsersServlet extends HttpServlet {
             if (currentUser.getUserId() == userId) {
                 request.setAttribute("error", "Du kan inte ta bort ditt eget konto!");
             } else {
-                boolean success = userDAO.deleteUser(userId);
+                boolean success = userFacade.deleteUser(userId);
 
                 if (success) {
                     request.setAttribute("success", "Användare borttagen!");
@@ -217,4 +218,5 @@ public class AdminUsersServlet extends HttpServlet {
         listUsers(request, response);
     }
 }
+
 

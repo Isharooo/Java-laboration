@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import webshop.lab.se.javawebshop.bo.Order;
-import webshop.lab.se.javawebshop.db.OrderDAO;
+import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,11 +18,11 @@ import java.util.List;
 @WebServlet(name = "WarehouseServlet", urlPatterns = {"/warehouse/orders"})
 public class WarehouseServlet extends HttpServlet {
 
-    private OrderDAO orderDAO;
+    private OrderFacade orderFacade;
 
     @Override
     public void init() throws ServletException {
-        orderDAO = new OrderDAO();
+        orderFacade = new OrderFacade();
     }
 
     @Override
@@ -57,18 +57,9 @@ public class WarehouseServlet extends HttpServlet {
     private void listOrders(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String statusFilter = request.getParameter("status");
-        List<Order> orders;
-
-        if (statusFilter != null && !statusFilter.isEmpty() && !statusFilter.equals("all")) {
-            orders = orderDAO.getOrdersByStatus(statusFilter);
-            request.setAttribute("currentStatus", statusFilter);
-        } else {
-            orders = orderDAO.getAllOrders();
-            request.setAttribute("currentStatus", "all");
-        }
-
+        List<Order> orders = orderFacade.getAllOrders();
         request.setAttribute("orders", orders);
+
         request.getRequestDispatcher("/WEB-INF/warehouse/orders.jsp").forward(request, response);
     }
 
@@ -80,7 +71,7 @@ public class WarehouseServlet extends HttpServlet {
 
         try {
             int orderId = Integer.parseInt(request.getParameter("id"));
-            Order order = orderDAO.getOrderById(orderId);
+            Order order = orderFacade.getOrderById(orderId);
 
             if (order != null) {
                 request.setAttribute("order", order);
@@ -104,14 +95,7 @@ public class WarehouseServlet extends HttpServlet {
             int orderId = Integer.parseInt(request.getParameter("orderId"));
             String newStatus = request.getParameter("status");
 
-            // Validera status
-            if (!isValidStatus(newStatus)) {
-                request.setAttribute("error", "Ogiltig status");
-                listOrders(request, response);
-                return;
-            }
-
-            boolean success = orderDAO.updateOrderStatus(orderId, newStatus);
+            boolean success = orderFacade.updateOrderStatus(orderId, newStatus);
 
             if (success) {
                 System.out.println("Order " + orderId + " status uppdaterad till: " + newStatus);
@@ -126,10 +110,4 @@ public class WarehouseServlet extends HttpServlet {
 
         listOrders(request, response);
     }
-
-    /**
-     * Validera att status är giltig
-     */
-    private boolean isValidStatus(String status) {
-        return status != null && (status.equals("pending") || status.equals("packed"));}
 }

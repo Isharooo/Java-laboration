@@ -7,8 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import webshop.lab.se.javawebshop.bo.Category;
 import webshop.lab.se.javawebshop.bo.Product;
-import webshop.lab.se.javawebshop.db.CategoryDAO;
-import webshop.lab.se.javawebshop.db.ProductDAO;
+import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,13 +19,11 @@ import java.util.List;
 @WebServlet(name = "AdminProductsServlet", urlPatterns = {"/admin/products"})
 public class AdminProductsServlet extends HttpServlet {
 
-    private ProductDAO productDAO;
-    private CategoryDAO categoryDAO;
+    private ItemFacade itemFacade;
 
     @Override
     public void init() throws ServletException {
-        productDAO = new ProductDAO();
-        categoryDAO = new CategoryDAO();
+        itemFacade = new ItemFacade();
     }
 
     @Override
@@ -76,7 +73,7 @@ public class AdminProductsServlet extends HttpServlet {
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Product> products = productDAO.getAllProducts();
+        List<Product> products = itemFacade.getAllProducts();
         request.setAttribute("products", products);
         request.getRequestDispatcher("/WEB-INF/admin/products.jsp").forward(request, response);
     }
@@ -87,7 +84,7 @@ public class AdminProductsServlet extends HttpServlet {
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Category> categories = categoryDAO.getAllCategories();
+        List<Category> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
         request.removeAttribute("product");
         request.getRequestDispatcher("/WEB-INF/admin/product-form.jsp").forward(request, response);
@@ -101,8 +98,8 @@ public class AdminProductsServlet extends HttpServlet {
 
         try {
             int productId = Integer.parseInt(request.getParameter("id"));
-            Product product = productDAO.getProductById(productId);
-            List<Category> categories = categoryDAO.getAllCategories();
+            Product product = itemFacade.getProductById(productId);
+            List<Category> categories = itemFacade.getAllCategories();
 
             if (product != null) {
                 request.setAttribute("product", product);
@@ -145,7 +142,7 @@ public class AdminProductsServlet extends HttpServlet {
             }
 
             Product product = new Product(categoryId, name.trim(), description, price, stock, imageUrl);
-            boolean success = productDAO.createProduct(product);
+            boolean success = itemFacade.createProduct(product);
 
             if (success) {
                 request.setAttribute("success", "Produkt skapad!");
@@ -191,7 +188,7 @@ public class AdminProductsServlet extends HttpServlet {
             }
 
             Product product = new Product(productId, categoryId, name.trim(), description, price, stock, imageUrl);
-            boolean success = productDAO.updateProduct(product);
+            boolean success = itemFacade.updateProduct(product);
 
             if (success) {
                 request.setAttribute("success", "Produkt uppdaterad!");
@@ -216,7 +213,7 @@ public class AdminProductsServlet extends HttpServlet {
 
         try {
             int productId = Integer.parseInt(request.getParameter("id"));
-            boolean success = productDAO.deleteProduct(productId);
+            boolean success = itemFacade.deleteProduct(productId);
 
             if (success) {
                 request.setAttribute("success", "Produkt borttagen!");

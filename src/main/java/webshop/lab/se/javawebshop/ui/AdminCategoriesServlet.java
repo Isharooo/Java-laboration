@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import webshop.lab.se.javawebshop.bo.Category;
-import webshop.lab.se.javawebshop.db.CategoryDAO;
+import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.List;
 @WebServlet(name = "AdminCategoriesServlet", urlPatterns = {"/admin/categories"})
 public class AdminCategoriesServlet extends HttpServlet {
 
-    private CategoryDAO categoryDAO;
+    private ItemFacade itemFacade;
 
     @Override
     public void init() throws ServletException {
-        categoryDAO = new CategoryDAO();
+        itemFacade = new ItemFacade();
     }
 
     @Override
@@ -71,7 +71,7 @@ public class AdminCategoriesServlet extends HttpServlet {
     private void listCategories(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Category> categories = categoryDAO.getAllCategories();
+        List<Category> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
         request.getRequestDispatcher("/WEB-INF/admin/categories.jsp").forward(request, response);
     }
@@ -94,7 +94,7 @@ public class AdminCategoriesServlet extends HttpServlet {
 
         try {
             int categoryId = Integer.parseInt(request.getParameter("id"));
-            Category category = categoryDAO.getCategoryById(categoryId);
+            Category category = itemFacade.getCategoryById(categoryId);
 
             if (category != null) {
                 request.setAttribute("category", category);
@@ -125,7 +125,7 @@ public class AdminCategoriesServlet extends HttpServlet {
         }
 
         Category category = new Category(name.trim(), description);
-        boolean success = categoryDAO.createCategory(category);
+        boolean success = itemFacade.createCategory(category);
 
         if (success) {
             request.setAttribute("success", "Kategori skapad!");
@@ -150,14 +150,14 @@ public class AdminCategoriesServlet extends HttpServlet {
             // Validera
             if (name == null || name.trim().isEmpty()) {
                 request.setAttribute("error", "Kategorinamn måste anges");
-                Category category = categoryDAO.getCategoryById(categoryId);
+                Category category = itemFacade.getCategoryById(categoryId);
                 request.setAttribute("category", category);
                 request.getRequestDispatcher("/WEB-INF/admin/category-form.jsp").forward(request, response);
                 return;
             }
 
             Category category = new Category(categoryId, name.trim(), description);
-            boolean success = categoryDAO.updateCategory(category);
+            boolean success = itemFacade.updateCategory(category);
 
             if (success) {
                 request.setAttribute("success", "Kategori uppdaterad!");
@@ -180,7 +180,7 @@ public class AdminCategoriesServlet extends HttpServlet {
 
         try {
             int categoryId = Integer.parseInt(request.getParameter("id"));
-            boolean success = categoryDAO.deleteCategory(categoryId);
+            boolean success = itemFacade.deleteCategory(categoryId);
 
             if (success) {
                 request.setAttribute("success", "Kategori borttagen!");
