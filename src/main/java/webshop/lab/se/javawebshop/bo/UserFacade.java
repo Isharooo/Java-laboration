@@ -116,8 +116,6 @@ public class UserFacade {
         return userDAO.deleteUser(userId);
     }
 
-    // ========== KONVERTERINGSMETODER (privata) ==========
-
     private UserInfo convertToUserInfo(User user) {
         return new UserInfo(
                 user.getUserId(),

@@ -18,7 +18,6 @@ public class OrderInfo {
         this.orderItems = orderItems;
     }
 
-    // Getters
     public int getOrderId() {
         return orderId;
     }

@@ -108,8 +108,6 @@ public class OrderFacade {
         return orderDAO.updateOrderStatus(orderId, newStatus);
     }
 
-    // ========== KONVERTERINGSMETODER (privata) ==========
-
     private OrderInfo convertToOrderInfo(Order order) {
         List<OrderItemInfo> orderItemInfoList = new ArrayList<>();
 

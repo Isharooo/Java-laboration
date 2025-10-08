@@ -9,7 +9,6 @@ public class CategoryInfo {
         this.name = name;
     }
 
-    // Getters
     public int getCategoryId() {
         return categoryId;
     }

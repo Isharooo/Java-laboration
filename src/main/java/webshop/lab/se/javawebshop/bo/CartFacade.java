@@ -64,8 +64,6 @@ public class CartFacade {
         System.out.println("Varukorg tömdes");
     }
 
-    // ========== HJÄLPMETODER ==========
-
     private Cart getOrCreateCart(HttpSession session) {
         Cart cart = (Cart) session.getAttribute("cart");
         if (cart == null) {

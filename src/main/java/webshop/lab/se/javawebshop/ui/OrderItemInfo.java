@@ -15,7 +15,6 @@ public class OrderItemInfo {
         this.subtotal = subtotal;
     }
 
-    // Getters
     public String getProductName() {
         return productName;
     }

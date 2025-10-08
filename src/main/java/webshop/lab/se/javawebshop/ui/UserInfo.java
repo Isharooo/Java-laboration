@@ -11,7 +11,6 @@ public class UserInfo {
         this.role = role;
     }
 
-    // Getters
     public int getUserId() {
         return userId;
     }

@@ -17,7 +17,6 @@ public class ProductInfo {
         this.categoryName = categoryName;
     }
 
-    // Getters
     public int getProductId() {
         return productId;
     }

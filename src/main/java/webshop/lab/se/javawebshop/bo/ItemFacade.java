@@ -19,8 +19,6 @@ public class ItemFacade {
         this.categoryDAO = new CategoryDAO();
     }
 
-    // ========== PRODUCT METHODS (returnerar ProductInfo) ==========
-
     public List<ProductInfo> getAllProducts() {
         List<Product> products = productDAO.getAllProducts();
         return convertToProductInfoList(products);
@@ -94,8 +92,6 @@ public class ItemFacade {
         return productDAO.checkStock(productId, quantity);
     }
 
-    // ========== CATEGORY METHODS (returnerar CategoryInfo) ==========
-
     public List<CategoryInfo> getAllCategories() {
         List<Category> categories = categoryDAO.getAllCategories();
         return convertToCategoryInfoList(categories);
@@ -139,8 +135,6 @@ public class ItemFacade {
 
         return categoryDAO.deleteCategory(categoryId);
     }
-
-    // ========== KONVERTERINGSMETODER (privata) ==========
 
     private ProductInfo convertToProductInfo(Product product) {
         return new ProductInfo(

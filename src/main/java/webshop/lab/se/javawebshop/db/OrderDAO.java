@@ -104,7 +104,7 @@ public class OrderDAO {
             }
             if (conn != null) {
                 try {
-                    conn.setAutoCommit(true); // Återställ autoCommit
+                    conn.setAutoCommit(true);
                     dbManager.closeConnection(conn);
                 } catch (SQLException e) {
                     e.printStackTrace();
