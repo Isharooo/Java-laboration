@@ -1,10 +1,10 @@
 package webshop.lab.se.javawebshop.bo;
 
+import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.db.OrderDAO;
 import webshop.lab.se.javawebshop.ui.OrderInfo;
 import webshop.lab.se.javawebshop.ui.OrderItemInfo;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +16,9 @@ public class OrderFacade {
         this.orderDAO = new OrderDAO();
     }
 
-    public OrderInfo createOrderFromCart(int userId, Cart cart) {
+    public OrderInfo createOrderFromCart(int userId, HttpSession session) {
+        Cart cart = (Cart) session.getAttribute("cart");
+
         if (cart == null || cart.isEmpty()) {
             System.err.println("Varukorgen är tom");
             return null;

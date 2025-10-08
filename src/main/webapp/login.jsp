@@ -43,11 +43,5 @@
     <button type="submit">Logga in</button>
 </form>
 
-<hr>
-
-<h3>Testkonton:</h3>
-<p><strong>Admin:</strong> admin / admin123</p>
-<p><strong>Kund:</strong> johndoe / password123</p>
-<p><strong>Lager:</strong> warehouse1 / warehouse123</p>
 </body>
 </html>

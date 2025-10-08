@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import webshop.lab.se.javawebshop.bo.User;
 
 import java.io.IOException;
 
@@ -29,7 +28,7 @@ public class RoleFilter implements Filter {
             return;
         }
 
-        User user = (User) session.getAttribute("user");
+        UserInfo user = (UserInfo) session.getAttribute("user");
 
         if (path.startsWith(contextPath + "/admin/")) {
             if (!user.isAdmin()) {

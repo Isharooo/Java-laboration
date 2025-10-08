@@ -1,13 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="webshop.lab.se.javawebshop.bo.CartFacade" %>
-<%@ page import="webshop.lab.se.javawebshop.ui.CartInfo" %>
-<%
-    CartFacade cartFacade = new CartFacade();
-    CartInfo cartInfo = cartFacade.getCartInfo(session);
-    request.setAttribute("cartInfo", cartInfo);
-%>
 <!DOCTYPE html>
 <html lang="sv">
 <head>

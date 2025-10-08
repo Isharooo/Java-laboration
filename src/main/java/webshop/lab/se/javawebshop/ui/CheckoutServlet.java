@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import webshop.lab.se.javawebshop.bo.Cart;
+import webshop.lab.se.javawebshop.bo.CartFacade;
 import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
@@ -15,10 +15,12 @@ import java.io.IOException;
 public class CheckoutServlet extends HttpServlet {
 
     private OrderFacade orderFacade;
+    private CartFacade cartFacade;
 
     @Override
     public void init() throws ServletException {
         orderFacade = new OrderFacade();
+        cartFacade = new CartFacade();
     }
 
     @Override
@@ -31,13 +33,14 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        Cart cart = (Cart) session.getAttribute("cart");
+        CartInfo cartInfo = cartFacade.getCartInfo(session);
 
-        if (cart == null || cart.isEmpty()) {
+        if (cartInfo.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/products");
             return;
         }
 
+        request.setAttribute("cartInfo", cartInfo);
         request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
     }
 
@@ -52,25 +55,26 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         UserInfo user = (UserInfo) session.getAttribute("user");
-        Cart cart = (Cart) session.getAttribute("cart");
+        CartInfo cartInfo = cartFacade.getCartInfo(session);
 
-        if (cart == null || cart.isEmpty()) {
+        if (cartInfo.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/products");
             return;
         }
 
         try {
-            OrderInfo order = orderFacade.createOrderFromCart(user.getUserId(), cart);
+            OrderInfo order = orderFacade.createOrderFromCart(user.getUserId(), session);
 
             if (order != null) {
                 System.out.println("Order " + order.getOrderId() + " skapad - redirectar till produkter");
 
-                cart.clear();
+                cartFacade.clearCart(session);
 
                 response.sendRedirect(request.getContextPath() + "/products");
 
             } else {
                 request.setAttribute("error", "Kunde inte skapa order. Kontrollera lagersaldo och försök igen.");
+                request.setAttribute("cartInfo", cartInfo);
                 request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
             }
 
@@ -78,6 +82,7 @@ public class CheckoutServlet extends HttpServlet {
             System.err.println("Fel vid orderläggning: " + e.getMessage());
             e.printStackTrace();
             request.setAttribute("error", "Ett tekniskt fel uppstod. Vänligen försök igen.");
+            request.setAttribute("cartInfo", cartInfo);
             request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
         }
     }
