@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
+<%@ page import="webshop.lab.se.javawebshop.bo.CartFacade" %>
+<%@ page import="webshop.lab.se.javawebshop.ui.CartInfo" %>
 <%
-    Cart cart = (Cart) session.getAttribute("cart");
-    request.setAttribute("cart", cart);
+    CartFacade cartFacade = new CartFacade();
+    CartInfo cartInfo = cartFacade.getCartInfo(session);
+    request.setAttribute("cartInfo", cartInfo);
 %>
 <!DOCTYPE html>
 <html lang="sv">
@@ -47,12 +49,9 @@
     <div class="error">${error}</div>
 </c:if>
 
-<c:forEach var="entry" items="${cart.items}">
-    <c:set var="item" value="${entry.value}"/>
-    <c:set var="product" value="${item.product}"/>
-
+<c:forEach var="item" items="${cartInfo.items}">
     <div class="order-item">
-        <h3>${product.name}</h3>
+        <h3>${item.product.name}</h3>
         <p><strong>Antal:</strong> ${item.quantity} st</p>
         <p><strong>Summa:</strong>
             <fmt:formatNumber value="${item.subtotal}" type="currency"
@@ -63,9 +62,9 @@
 
 <hr>
 
-<p><strong>Antal produkter:</strong> ${cart.totalQuantity} st</p>
+<p><strong>Antal produkter:</strong> ${cartInfo.totalQuantity} st</p>
 <p><strong>Totalt att betala:</strong>
-    <fmt:formatNumber value="${cart.totalPrice}" type="currency"
+    <fmt:formatNumber value="${cartInfo.totalPrice}" type="currency"
                       currencySymbol="kr" maxFractionDigits="0"/>
 </p>
 

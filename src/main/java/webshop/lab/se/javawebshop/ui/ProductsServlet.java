@@ -6,8 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import webshop.lab.se.javawebshop.bo.Category;
-import webshop.lab.se.javawebshop.bo.Product;
 import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
@@ -33,18 +31,18 @@ public class ProductsServlet extends HttpServlet {
             return;
         }
 
-        List<Category> categories = itemFacade.getAllCategories();
+        List<CategoryInfo> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
 
         String categoryParam = request.getParameter("category");
-        List<Product> products;
+        List<ProductInfo> products;
 
         if (categoryParam != null && !categoryParam.isEmpty()) {
             try {
                 int categoryId = Integer.parseInt(categoryParam);
                 products = itemFacade.getProductsByCategory(categoryId);
 
-                Category selectedCategory = itemFacade.getCategoryById(categoryId);
+                CategoryInfo selectedCategory = itemFacade.getCategoryById(categoryId);
                 request.setAttribute("selectedCategory", selectedCategory);
 
             } catch (NumberFormatException e) {

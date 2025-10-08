@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import webshop.lab.se.javawebshop.bo.Category;
 import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
@@ -65,7 +64,7 @@ public class AdminCategoriesServlet extends HttpServlet {
     private void listCategories(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Category> categories = itemFacade.getAllCategories();
+        List<CategoryInfo> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
         request.getRequestDispatcher("/WEB-INF/admin/categories.jsp").forward(request, response);
     }
@@ -82,7 +81,7 @@ public class AdminCategoriesServlet extends HttpServlet {
 
         try {
             int categoryId = Integer.parseInt(request.getParameter("id"));
-            Category category = itemFacade.getCategoryById(categoryId);
+            CategoryInfo category = itemFacade.getCategoryById(categoryId);
 
             if (category != null) {
                 request.setAttribute("category", category);
@@ -107,8 +106,7 @@ public class AdminCategoriesServlet extends HttpServlet {
             return;
         }
 
-        Category category = new Category(name.trim());
-        boolean success = itemFacade.createCategory(category);
+        boolean success = itemFacade.createCategory(name.trim());
 
         if (success) {
             request.setAttribute("success", "Kategori skapad!");
@@ -128,14 +126,13 @@ public class AdminCategoriesServlet extends HttpServlet {
 
             if (name == null || name.trim().isEmpty()) {
                 request.setAttribute("error", "Kategorinamn måste anges");
-                Category category = itemFacade.getCategoryById(categoryId);
+                CategoryInfo category = itemFacade.getCategoryById(categoryId);
                 request.setAttribute("category", category);
                 request.getRequestDispatcher("/WEB-INF/admin/category-form.jsp").forward(request, response);
                 return;
             }
 
-            Category category = new Category(categoryId, name.trim());
-            boolean success = itemFacade.updateCategory(category);
+            boolean success = itemFacade.updateCategory(categoryId, name.trim());
 
             if (success) {
                 request.setAttribute("success", "Kategori uppdaterad!");

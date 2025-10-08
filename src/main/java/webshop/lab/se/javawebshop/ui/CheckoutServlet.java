@@ -7,8 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import webshop.lab.se.javawebshop.bo.Cart;
-import webshop.lab.se.javawebshop.bo.Order;
-import webshop.lab.se.javawebshop.bo.User;
 import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
@@ -40,7 +38,6 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        // Forwarda till checkout.jsp
         request.getRequestDispatcher("/WEB-INF/checkout.jsp").forward(request, response);
     }
 
@@ -54,7 +51,7 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-        User user = (User) session.getAttribute("user");
+        UserInfo user = (UserInfo) session.getAttribute("user");
         Cart cart = (Cart) session.getAttribute("cart");
 
         if (cart == null || cart.isEmpty()) {
@@ -63,7 +60,7 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         try {
-            Order order = orderFacade.createOrderFromCart(user.getUserId(), cart);
+            OrderInfo order = orderFacade.createOrderFromCart(user.getUserId(), cart);
 
             if (order != null) {
                 System.out.println("Order " + order.getOrderId() + " skapad - redirectar till produkter");

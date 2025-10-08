@@ -1,7 +1,11 @@
 package webshop.lab.se.javawebshop.bo;
 
 import webshop.lab.se.javawebshop.db.OrderDAO;
+import webshop.lab.se.javawebshop.ui.OrderInfo;
+import webshop.lab.se.javawebshop.ui.OrderItemInfo;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderFacade {
@@ -12,7 +16,7 @@ public class OrderFacade {
         this.orderDAO = new OrderDAO();
     }
 
-    public Order createOrderFromCart(int userId, Cart cart) {
+    public OrderInfo createOrderFromCart(int userId, Cart cart) {
         if (cart == null || cart.isEmpty()) {
             System.err.println("Varukorgen är tom");
             return null;
@@ -41,42 +45,46 @@ public class OrderFacade {
 
         if (success) {
             System.out.println("Order skapad via facade: Order ID " + order.getOrderId());
-            return order;
+            return getOrderById(order.getOrderId());
         } else {
             System.err.println("Misslyckades med att skapa order via facade");
             return null;
         }
     }
 
-    public Order getOrderById(int orderId) {
+    public OrderInfo getOrderById(int orderId) {
         if (orderId <= 0) {
             System.err.println("Ogiltigt order-ID");
             return null;
         }
 
-        return orderDAO.getOrderById(orderId);
+        Order order = orderDAO.getOrderById(orderId);
+        return order != null ? convertToOrderInfo(order) : null;
     }
 
-    public List<Order> getOrdersByUser(int userId) {
+    public List<OrderInfo> getOrdersByUser(int userId) {
         if (userId <= 0) {
             System.err.println("Ogiltigt användar-ID");
             return List.of();
         }
 
-        return orderDAO.getOrdersByUser(userId);
+        List<Order> orders = orderDAO.getOrdersByUser(userId);
+        return convertToOrderInfoList(orders);
     }
 
-    public List<Order> getOrdersByStatus(String status) {
+    public List<OrderInfo> getOrdersByStatus(String status) {
         if (status == null || status.trim().isEmpty()) {
             System.err.println("Status saknas");
             return List.of();
         }
 
-        return orderDAO.getOrdersByStatus(status);
+        List<Order> orders = orderDAO.getOrdersByStatus(status);
+        return convertToOrderInfoList(orders);
     }
 
-    public List<Order> getAllOrders() {
-        return orderDAO.getAllOrders();
+    public List<OrderInfo> getAllOrders() {
+        List<Order> orders = orderDAO.getAllOrders();
+        return convertToOrderInfoList(orders);
     }
 
     public boolean updateOrderStatus(int orderId, String newStatus) {
@@ -98,12 +106,35 @@ public class OrderFacade {
         return orderDAO.updateOrderStatus(orderId, newStatus);
     }
 
-    public List<OrderItem> getOrderItems(int orderId) {
-        if (orderId <= 0) {
-            System.err.println("Ogiltigt order-ID");
-            return List.of(); // Tom lista
+    // ========== KONVERTERINGSMETODER (privata) ==========
+
+    private OrderInfo convertToOrderInfo(Order order) {
+        List<OrderItemInfo> orderItemInfoList = new ArrayList<>();
+
+        for (OrderItem item : order.getOrderItems()) {
+            OrderItemInfo itemInfo = new OrderItemInfo(
+                    item.getProductName(),
+                    item.getQuantity(),
+                    item.getPrice(),
+                    item.getSubtotal()
+            );
+            orderItemInfoList.add(itemInfo);
         }
 
-        return orderDAO.getOrderItems(orderId);
+        return new OrderInfo(
+                order.getOrderId(),
+                order.getUsername(),
+                order.getStatus(),
+                order.getTotalAmount(),
+                orderItemInfoList
+        );
+    }
+
+    private List<OrderInfo> convertToOrderInfoList(List<Order> orders) {
+        List<OrderInfo> orderInfoList = new ArrayList<>();
+        for (Order order : orders) {
+            orderInfoList.add(convertToOrderInfo(order));
+        }
+        return orderInfoList;
     }
 }

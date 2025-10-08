@@ -5,8 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import webshop.lab.se.javawebshop.bo.Category;
-import webshop.lab.se.javawebshop.bo.Product;
 import webshop.lab.se.javawebshop.bo.ItemFacade;
 
 import java.io.IOException;
@@ -67,7 +65,7 @@ public class AdminProductsServlet extends HttpServlet {
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Product> products = itemFacade.getAllProducts();
+        List<ProductInfo> products = itemFacade.getAllProducts();
         request.setAttribute("products", products);
         request.getRequestDispatcher("/WEB-INF/admin/products.jsp").forward(request, response);
     }
@@ -75,7 +73,7 @@ public class AdminProductsServlet extends HttpServlet {
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Category> categories = itemFacade.getAllCategories();
+        List<CategoryInfo> categories = itemFacade.getAllCategories();
         request.setAttribute("categories", categories);
         request.removeAttribute("product");
         request.getRequestDispatcher("/WEB-INF/admin/product-form.jsp").forward(request, response);
@@ -86,8 +84,8 @@ public class AdminProductsServlet extends HttpServlet {
 
         try {
             int productId = Integer.parseInt(request.getParameter("id"));
-            Product product = itemFacade.getProductById(productId);
-            List<Category> categories = itemFacade.getAllCategories();
+            ProductInfo product = itemFacade.getProductById(productId);
+            List<CategoryInfo> categories = itemFacade.getAllCategories();
 
             if (product != null) {
                 request.setAttribute("product", product);
@@ -111,20 +109,7 @@ public class AdminProductsServlet extends HttpServlet {
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
 
-            if (name == null || name.trim().isEmpty()) {
-                throw new IllegalArgumentException("Produktnamn måste anges");
-            }
-
-            if (price.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Priset kan inte vara negativt");
-            }
-
-            if (stock < 0) {
-                throw new IllegalArgumentException("Lagersaldo kan inte vara negativt");
-            }
-
-            Product product = new Product(categoryId, name.trim(), price, stock);
-            boolean success = itemFacade.createProduct(product);
+            boolean success = itemFacade.createProduct(categoryId, name, price, stock);
 
             if (success) {
                 request.setAttribute("success", "Produkt skapad!");
@@ -151,20 +136,7 @@ public class AdminProductsServlet extends HttpServlet {
             BigDecimal price = new BigDecimal(request.getParameter("price"));
             int stock = Integer.parseInt(request.getParameter("stock"));
 
-            if (name == null || name.trim().isEmpty()) {
-                throw new IllegalArgumentException("Produktnamn måste anges");
-            }
-
-            if (price.compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Priset kan inte vara negativt");
-            }
-
-            if (stock < 0) {
-                throw new IllegalArgumentException("Lagersaldo kan inte vara negativt");
-            }
-
-            Product product = new Product(productId, categoryId, name.trim(), price, stock);
-            boolean success = itemFacade.updateProduct(product);
+            boolean success = itemFacade.updateProduct(productId, categoryId, name, price, stock);
 
             if (success) {
                 request.setAttribute("success", "Produkt uppdaterad!");

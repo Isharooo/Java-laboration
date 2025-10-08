@@ -1,15 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
-<%
-    Cart cart = (Cart) session.getAttribute("cart");
-    if (cart == null) {
-        cart = new Cart();
-        session.setAttribute("cart", cart);
-    }
-    request.setAttribute("cart", cart);
-%>
 <!DOCTYPE html>
 <html lang="sv">
 <head>
@@ -51,20 +42,17 @@
 <h1>Din varukorg</h1>
 
 <c:choose>
-    <c:when test="${cart.isEmpty()}">
+    <c:when test="${cartInfo.isEmpty()}">
         <p>Din varukorg är tom</p>
         <a href="${pageContext.request.contextPath}/products">Börja handla</a>
     </c:when>
     <c:otherwise>
-        <c:forEach var="entry" items="${cart.items}">
-            <c:set var="item" value="${entry.value}"/>
-            <c:set var="product" value="${item.product}"/>
-
+        <c:forEach var="item" items="${cartInfo.items}">
             <div class="cart-item">
-                <h3>${product.name}</h3>
-                <p><strong>Kategori:</strong> ${product.categoryName}</p>
+                <h3>${item.product.name}</h3>
+                <p><strong>Kategori:</strong> ${item.product.categoryName}</p>
                 <p><strong>Pris:</strong>
-                    <fmt:formatNumber value="${product.price}" type="currency"
+                    <fmt:formatNumber value="${item.product.price}" type="currency"
                                       currencySymbol="kr" maxFractionDigits="0"/> / st
                 </p>
                 <p><strong>Antal:</strong> ${item.quantity} st</p>
@@ -75,7 +63,7 @@
 
                 <form action="${pageContext.request.contextPath}/cart" method="post" style="display: inline;">
                     <input type="hidden" name="action" value="remove">
-                    <input type="hidden" name="productId" value="${product.productId}">
+                    <input type="hidden" name="productId" value="${item.product.productId}">
                     <button type="submit">Ta bort</button>
                 </form>
             </div>
@@ -83,9 +71,9 @@
 
         <hr>
 
-        <p><strong>Antal produkter:</strong> ${cart.totalQuantity} st</p>
+        <p><strong>Antal produkter:</strong> ${cartInfo.totalQuantity} st</p>
         <p><strong>Totalt:</strong>
-            <fmt:formatNumber value="${cart.totalPrice}" type="currency"
+            <fmt:formatNumber value="${cartInfo.totalPrice}" type="currency"
                               currencySymbol="kr" maxFractionDigits="0"/>
         </p>
 

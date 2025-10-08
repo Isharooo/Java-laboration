@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import webshop.lab.se.javawebshop.bo.Order;
 import webshop.lab.se.javawebshop.bo.OrderFacade;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class WarehouseServlet extends HttpServlet {
     private void listOrders(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<Order> orders = orderFacade.getAllOrders();
+        List<OrderInfo> orders = orderFacade.getAllOrders();
         request.setAttribute("orders", orders);
 
         request.getRequestDispatcher("/WEB-INF/warehouse/orders.jsp").forward(request, response);
@@ -61,7 +60,7 @@ public class WarehouseServlet extends HttpServlet {
 
         try {
             int orderId = Integer.parseInt(request.getParameter("id"));
-            Order order = orderFacade.getOrderById(orderId);
+            OrderInfo order = orderFacade.getOrderById(orderId);
 
             if (order != null) {
                 request.setAttribute("order", order);

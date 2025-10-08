@@ -1,10 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ page import="webshop.lab.se.javawebshop.bo.Cart" %>
+<%@ page import="webshop.lab.se.javawebshop.bo.CartFacade" %>
+<%@ page import="webshop.lab.se.javawebshop.ui.CartInfo" %>
 <%
-    Cart navCart = (Cart) session.getAttribute("cart");
-    int cartCount = (navCart != null) ? navCart.getTotalQuantity() : 0;
+    CartFacade cartFacade = new CartFacade();
+    CartInfo navCartInfo = cartFacade.getCartInfo(session);
+    int cartCount = navCartInfo.getTotalQuantity();
 %>
 <!DOCTYPE html>
 <html lang="sv">

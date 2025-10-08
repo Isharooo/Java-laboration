@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import webshop.lab.se.javawebshop.bo.User;
 import webshop.lab.se.javawebshop.bo.UserFacade;
 
 import java.io.IOException;
@@ -43,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        User user = userFacade.login(username.trim(), password);
+        UserInfo user = userFacade.login(username.trim(), password);
 
         if (user != null) {
             HttpSession session = request.getSession();

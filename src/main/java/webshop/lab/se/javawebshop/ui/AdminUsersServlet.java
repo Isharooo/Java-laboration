@@ -5,7 +5,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import webshop.lab.se.javawebshop.bo.User;
 import webshop.lab.se.javawebshop.bo.UserFacade;
 
 import java.io.IOException;
@@ -65,7 +64,7 @@ public class AdminUsersServlet extends HttpServlet {
     private void listUsers(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        List<User> users = userFacade.getAllUsers();
+        List<UserInfo> users = userFacade.getAllUsers();
         request.setAttribute("users", users);
         request.getRequestDispatcher("/WEB-INF/admin/users.jsp").forward(request, response);
     }
@@ -81,7 +80,7 @@ public class AdminUsersServlet extends HttpServlet {
 
         try {
             int userId = Integer.parseInt(request.getParameter("id"));
-            User user = userFacade.getUserById(userId);
+            UserInfo user = userFacade.getUserById(userId);
 
             if (user != null) {
                 request.setAttribute("user", user);
@@ -111,8 +110,7 @@ public class AdminUsersServlet extends HttpServlet {
             return;
         }
 
-        User user = new User(username.trim(), password, role);
-        boolean success = userFacade.createUser(user);
+        boolean success = userFacade.createUser(username.trim(), password, role);
 
         if (success) {
             request.setAttribute("success", "Användare skapad!");
@@ -136,14 +134,13 @@ public class AdminUsersServlet extends HttpServlet {
                     role == null || role.trim().isEmpty()) {
 
                 request.setAttribute("error", "Användarnamn och roll måste fyllas i");
-                User user = userFacade.getUserById(userId);
+                UserInfo user = userFacade.getUserById(userId);
                 request.setAttribute("user", user);
                 request.getRequestDispatcher("/WEB-INF/admin/user-form.jsp").forward(request, response);
                 return;
             }
 
-            User user = new User(userId, username.trim(), password, role);
-            boolean success = userFacade.updateUser(user);
+            boolean success = userFacade.updateUser(userId, username.trim(), password, role);
 
             if (success) {
                 request.setAttribute("success", "Användare uppdaterad!");
@@ -164,7 +161,7 @@ public class AdminUsersServlet extends HttpServlet {
         try {
             int userId = Integer.parseInt(request.getParameter("id"));
 
-            User currentUser = (User) request.getSession().getAttribute("user");
+            UserInfo currentUser = (UserInfo) request.getSession().getAttribute("user");
             if (currentUser.getUserId() == userId) {
                 request.setAttribute("error", "Du kan inte ta bort ditt eget konto!");
             } else {
@@ -190,5 +187,3 @@ public class AdminUsersServlet extends HttpServlet {
         listUsers(request, response);
     }
 }
-
-
